@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="print_pos_receipt.PrintReceiptButton" owl="1">
+       <button class="js_custom_print control-button btn btn-light rounded-0 fw-bolder" t-on-click="printReceipt">
+           <i role="img" class='fa fa-print' aria-label="POSReceipt" title="POSReceipt"/>
+                  Print Receipt
+       </button>
+   </t>
+</templates>
+

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_retail_sales" model="report.paperformat">
+        <field name="name">Retail Sale Order PaperFormat</field>
+        <field name="default" eval="True"/>
+        <field name="format">A5</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">38</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_retail_sales" model="ir.actions.report">
+        <field name="name">Cash Bill</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">retail_sale_order.retail_sales_report</field>
+        <field name="report_file">retail_sale_order.retail_sales_report</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="print_report_name">('Cash Bill - %s' % object.name)</field>
+        <field name="paperformat_id" ref="retail_sale_order.paperformat_retail_sales"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="retail_sales_report">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <style>
+                    table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    }
+                    th, td {
+                    border: 2px solid black;
+                    padding: 3px; /* reduce from 5px */
+                    font-size: 13px;
+                    vertical-align: middle;
+                    }
+                    /* reduce spacing inside nested table headers */
+                    th table {
+                    margin: 0;
+                    padding: 0;
+                    }
+                    th table td {
+                    padding: 1px 0;
+                    font-size: 12px;
+                    line-height: 1.1; /* tighter spacing */
+                    }
+                </style>
+
+                <link rel="stylesheet" type="text/css" href="/retail_sale_order/static/src/css/font.css"/>
+                <div class="font-roboto-thin">
+                    <div class="header">
+                        <t t-foreach="docs" t-as="o">
+                            <div style="width:100%;color: #666;font-weight:bold;line-height:1.5;">
+                                <div style="float:left;width:60%;margin-top:23px;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                         style="max-width: 60%;"/>
+                                </div>
+                                <div style="float:right;width: 40%;text-align:right;color: #666;">
+                                    <t t-if="o.company_id.street">
+                                        <br/>
+                                        <t t-esc="o.company_id.street"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <t t-esc="o.company_id.street2"/>
+                                        <br/>
+                                    </t>
+                                    <t t-esc="o.company_id.city"/>
+                                    <span>,</span>
+                                    Pin -
+                                    <t t-esc="o.company_id.zip"/>
+                                    <br/>
+                                    <t t-esc="o.company_id.state_id.name"/>
+                                    <span>,</span>
+                                    <t t-esc="o.company_id.country_id.name"/>
+                                    <br/>
+                                    <t t-if="o.company_id.vat">
+                                        <span>GSTIN:
+                                            <t t-esc="o.company_id.vat"/>
+                                        </span>
+                                    </t>
+                                    <br/>
+                                    <t t-if="o.company_id.pan_no">
+                                        <span>PAN:
+                                            <t t-esc="o.company_id.pan_no"/>
+                                        </span>
+                                    </t>
+
+                                </div>
+                            </div>
+                        </t>
+                        <div style="clear:both;"></div>
+                        <div style="border-top: 1px solid #DEDBDA; color:#DEDBDA; margin-top: 10px;"/>
+                    </div>
+                    <div class="page" style="margin-top: 10px;">
+                        <t t-foreach="docs" t-as="o">
+                            <h4 style="text-align:center;color:#817E7E">
+                                <strong>Cash Bill</strong>
+
+                            </h4>
+                            <br/>
+                            <div style="width: 100%;">
+                                <div style="width: 50%; float: left;">
+                                    <strong>Name</strong>
+                                    <br/>
+                                    <t t-esc="o.partner_id.name"/>
+                                </div>
+                                <div style="width: 50%; float: left;">
+                                    <strong>Phone No.</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.partner_id.phone"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <div style="width: 100%;">
+                                <div style="width: 50%; float: left;">
+                                    <strong>Quotation No</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.name"/>
+                                    </span>
+                                </div>
+                                <div style="width: 50%; float: right;">
+                                    <strong>Order Date</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.date_order"
+                                           t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </div>
+
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <t t-set="count" t-value="1"/>
+                            <t t-set="qty" t-value="0"/>
+                            <t t-set="total_price" t-value="0"/>
+                            <t t-set="total_qty" t-value="0"/>
+                            <t t-set="total_weight" t-value="0"/>
+                            <t t-set="discount" t-value="0"/>
+                            <t t-set="tax" t-value="0"/>
+                            <t t-set="disc" t-value="0"/>
+                            <table class="table table-condensed table-bordered"
+                                   style="border: 2px solid black; border-collapse: collapse;">
+                                <tr>
+                                    <th style="text-align:center;">S.No.</th>
+                                    <th style="text_align:center;">Barcode</th>
+                                    <th style="text-align:left;">Description-Code</th>
+                                    <th style="text-align:center;">Qty</th>
+                                    <th style="text-align:center;">Weight</th>
+                                    <th style="text-align:right;">Rate</th>
+                                    <th t-if="o.order_line.filtered(lambda l: l.discount > 0)"
+                                        style="text-align:center;">Disc.
+                                    </th>
+                                    <th style="text-align:right;">Amount</th>
+                                </tr>
+                                <tbody style="font-size:14px;font-weight:normal;">
+                                    <t t-set="sgst" t-value="0"/>
+                                    <t t-set="cgst" t-value="0"/>
+                                    <t t-foreach="o.order_line" t-as="lines">
+                                        <t t-foreach="lines.tax_id" t-as="taxes">
+                                            <t t-foreach="taxes.children_tax_ids" t-as="ids">
+                                                <t t-if="ids.description == 'SGST'">
+                                                    <t t-set="sgst"
+                                                       t-value="sgst+((ids.amount/100)*lines.price_subtotal)"/>
+                                                </t>
+                                                <t t-else="ids.description == 'CGST'">
+                                                    <t t-set="cgst"
+                                                       t-value="cgst+((ids.amount/100)*lines.price_subtotal)"/>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <tr>
+                                            <td style="width:10%;text-align:center;">
+                                                <span>
+                                                    <t t-esc="count"/>
+                                                </span>
+                                            </td>
+
+                                            <td style="width:40%;text-align:center;">
+                                                <span>
+                                                    <t t-esc="lines.barcode"/>
+                                                </span>
+                                            </td>
+
+                                            <td style="width:40%;text-align:left;">
+                                                <span>
+                                                    <t t-esc="lines.name"/>
+                                                </span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                <t t-if="lines.product_id.uom_id.category_id.name == 'Weight'">
+                                                    <span>
+                                                        <t t-esc="int(lines.secondary_qty)"/>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span>
+                                                        <t t-esc="int(lines.product_uom_qty)"/>
+                                                    </span>
+                                                </t>
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                <t t-if="lines.product_id.uom_id.category_id.name == 'Weight'">
+                                                    <span>
+                                                        <t t-esc="lines.product_uom_qty"/>
+                                                    </span>
+
+                                                    <t t-set="total_weight"
+                                                       t-value="total_weight+lines.product_uom_qty"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span>
+
+                                                    </span>
+                                                </t>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <span>
+                                                    <t t-esc="lines.price_unit"
+                                                       t-options='{"widget": "monetary", "display_currency": lines.currency_id}'/>
+
+                                                </span>
+                                            </td>
+                                            <td t-if="o.order_line.filtered(lambda l: l.discount > 0)"
+                                                style="text-align:center;">
+                                                <t t-esc="lines.discount"/>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <span>
+                                                    <t t-esc="lines.price_subtotal"
+                                                       t-options='{"widget": "monetary", "display_currency": lines.currency_id}'/>
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                        <t t-set="count" t-value="count+1"/>
+                                        <!--                                        <t t-set="qty" t-value="qty+lines.quantity"/>-->
+                                        <t t-set="total_price" t-value="total_price+lines.price_subtotal"/>
+                                        <t t-set="total_qty" t-value="total_qty+lines.secondary_qty"/>
+                                        <t t-set="discount" t-value="discount+lines.discount"/>
+                                        <t t-set="disc" t-value="disc+(lines.price_unit-lines.price_subtotal)"/>
+                                    </t>
+                                    <tr>
+                                        <td style="border-right-color:white"></td>
+                                        <td style="border-right-color:white"></td>
+                                        <td></td>
+
+                                        <td style="text-align:center;">
+                                            <span>
+                                                <t t-esc="int(total_qty) if float(total_qty or 0.0).is_integer() else ('%.2f' % total_qty)"/>
+                                            </span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span>
+                                                <t t-esc="total_weight"/>
+                                            </span>
+                                        </td>
+                                        <td colspan="100%"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="float:right; padding-right:20px;page-break-inside:avoid;">
+                                <span>
+                                    <strong>Total Qty:</strong>
+                                    <span>
+                                        <t t-esc="total_qty"/>
+                                    </span>
+                                </span>
+                                <br></br>
+                                <span>
+                                    <strong>Total Weight:</strong>
+                                    <span>
+                                        <t t-esc="total_weight"/>
+                                    </span>
+                                </span>
+                                <br></br>
+                                <hr style="border-top: 3px solid black; margin-top: 10px;"/>
+
+                                <span style="color:#817E7E;">
+                                    <strong>Amount :</strong>
+                                </span>
+                                <span style="float:right;">
+                                    <t t-esc="total_price"
+                                       t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}'/>
+
+                                </span>
+                                <br/>
+                                <t t-if="cgst != 0 or sgst != 0">
+                                    <span style="color:#817E7E;">
+                                        <strong>CGST :</strong>
+                                    </span>
+                                    <span style="float:right;">
+                                        <t t-esc="cgst"
+                                           t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}'/>
+                                    </span>
+                                    <br/>
+                                    <span style="color:#817E7E;">
+                                        <strong>SGST :</strong>
+                                    </span>
+                                    <span style="float:right;">
+                                        <t t-esc="sgst"
+                                           t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}'/>
+
+                                    </span>
+                                    <br/>
+                                </t>
+                                <hr style="border-top: 2px solid black; margin-top: 10px;"/>
+                                <strong>Total :
+                                    <span style="float:right;">
+                                        <t t-esc="o.amount_total"
+                                           t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}'/>
+                                    </span>
+                                </strong>
+                                <br/>
+                            </div>
+                        </t>
+                        <div style="width:70%;padding-top:30%;font-size:14px">
+                            <strong>
+                                <t t-esc="o.pricelist_id.note"/>
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="text-center"
+                             style="border-top: 1px solid black; padding-top: 10px;font-size:14px;color: #666;font-weight:bold">
+                            <span>
+                                <t t-esc="o.company_id.phone"/>
+                            </span>
+                            <span style="margin-left: 20px;">
+                                <t t-esc="o.company_id.email"/>
+                            </span>
+                            <span style="margin-left: 20px;">
+                                <t t-esc="o.company_id.website"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

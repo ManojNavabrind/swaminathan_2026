@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="reprint_receipt_template">
+        <script type="text/javascript">
+            function printDiv(divName) {
+                var printContents = document.getElementById(divName).innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+            }
+        </script>
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page" id="printableArea"
+                         style="font-family: Arial, sans-serif; width: 100%; padding: 10px; color: black; border: 1px solid black; box-sizing: border-box;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="width: 100%;">
+                                <div style="width: 110px; height:20px; ">
+                                    <t t-if="o.company_id.logo">
+                                        <img t-att-src="image_data_uri(o.company_id.logo)" style="width: 100%; display: block;" alt="Company Logo"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color: #ccc; font-size: 10px;">No Logo</span>
+                                    </t>
+                                </div>
+                            </div>
+                            <div style="text-align: center; width: 100%;">
+                                <span style="font-size: 22px; font-weight: bold;"><t t-esc="o.company_id.name"/></span>
+                                <br/>
+                                <span style="font-size: 11px;"><t t-esc="o.company_id.street"/></span>,
+                                <span style="font-size: 11px;"><t t-esc="o.company_id.city"/></span> -
+                                <span style="font-size: 11px;"><t t-esc="o.company_id.zip"/></span>
+                                <br/>
+                                <span style="font-size: 11px;">Ph: <t t-esc="o.company_id.phone"/>, <t t-esc="o.company_id.phone2"/>, <t t-esc="o.company_id.phone3"/></span>
+                                <br/>
+                                <span style="font-size: 11px;">GSTIN:<t t-esc="o.company_id.vat"/></span>
+                            </div>
+                            <div style="width: 25%;"></div>
+                        </div>
+                        <hr style="border-top: 1px solid #000; margin: 15px 0;"/>
+                        <div style="text-align:center; font-size:18px; font-weight:bold; margin-bottom:10px;">
+                            <t t-esc="o.get_bill_type()"/>
+                        </div>
+
+                        <table style="width:100%; font-size:13px; font-weight:bold; line-height:1.5; margin-bottom:12px; border:white">
+                            <tr>
+                                <td style="width:60%; text-align:left; vertical-align:top;">
+                                    CUSTOMER NAME: <br/>
+                                    <span t-esc="o.partner_id.name if o.partner_id else ''"/>
+                                    <div t-if="o.partner_id.street"><t t-esc="o.partner_id.street"/></div>
+                                    <div t-if="o.partner_id.street2"><t t-esc="o.partner_id.street2"/></div>
+                                    <div t-if="o.partner_id.city"><t t-esc="o.partner_id.city"/></div>
+                                    <div t-if="o.partner_id.state_id"><t t-esc="o.partner_id.state_id.name"/></div>
+                                    <div t-if="o.partner_id.zip"><t t-esc="o.partner_id.zip"/></div>
+                                    <div t-if="o.partner_id.country_id"><t t-esc="o.partner_id.country_id.name"/></div>
+                                </td>
+                                <td></td>
+                                <td style="width:40%; text-align:left; vertical-align:top;">
+                                    <t t-if="o.partner_id.phone">PHONE : <span t-esc="o.partner_id.phone"/><br/></t>
+                                    <br/>DATE : <span t-esc="context_timestamp(o.date_order).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                    <br/><br/>BILL NO : <span t-esc="o.bill_no"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid black;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid black;">
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 5%;">S.NO.</th>
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 45%;">Description-Code</th>
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 8%;">Qty</th>
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 10%;">Weight</th>
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 12%;">Rate</th>
+                                    <th style="border-right: 1px solid black; padding: 5px; text-align: center; width: 8%;">Disc.</th>
+                                    <th style="padding: 5px; text-align: center; width: 12%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody style="font-weight: bold;">
+                                <t t-set="i" t-value="1"/>
+                                <t t-set="total_qty_count" t-value="0"/>
+                                <t t-set="total_sec_qty_count" t-value="0.0"/>
+                                <t t-set="total_weight_count" t-value="0.0"/>
+                                <t t-set="calculated_tax" t-value="0.0"/>
+                                <t t-set="subtotal_gross" t-value="0.0"/>
+
+                                <t t-foreach="o.get_pdf_print()" t-as="l">
+                                    <!-- LOGIC: Identify if the unit is Kg -->
+                                    <t t-set="uom_name" t-value="l.get('uom', '').lower() or l.get('uom_name', '').lower()"/>
+                                    <t t-set="is_kg" t-value="'kg' in uom_name"/>
+
+                                    <tr style="border-bottom: white;">
+                                        <td style="border-right: 1px solid black; text-align: center; padding: 6px;">
+                                            <t t-esc="i"/>
+                                        </td>
+                                        <td style="border-right: 1px solid black; padding: 6px; font-weight: bold; text-align: left;">
+                                            <t t-esc="l['product_name'].split('] ')[-1]"/>
+                                            <t t-if="l.get('barcode')">(<t t-esc="l['barcode']"/>)</t>
+                                        </td>
+
+                                        <!-- Qty Column: Only show if NOT Kg -->
+                                        <td style="border-right: 1px solid black; text-align: center; padding: 6px;">
+                                            <t t-if="not is_kg">
+                                                <t t-esc="int(l['qty'])"/>
+                                                <t t-set="total_qty_count" t-value="total_qty_count + l['qty']"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="qty_secondary" t-value="l['qty'] / l['secondary_qty']"/>
+                                                <t t-esc="round(qty_secondary)"/>
+                                                <t t-set="total_qty_count" t-value="total_qty_count + round(qty_secondary)"/>
+                                            </t>
+                                        </td>
+
+                                        <!-- Weight Column: Show quantity if Kg -->
+                                        <td style="border-right: 1px solid black; text-align: center; padding: 6px;">
+                                            <t t-if="is_kg">
+                                                <t t-esc="'%.3f' % l['qty']"/>
+                                                <t t-set="total_weight_count" t-value="total_weight_count + l['qty']"/>
+                                            </t>
+                                            <t t-else="">
+                                            </t>
+                                        </td>
+
+                                        <td style="border-right: 1px solid black; text-align: right; padding: 6px;">
+                                            ₹ <t t-esc="'{0:,.2f}'.format(l['price_unit'])"/>
+                                        </td>
+                                        <td style="border-right: 1px solid black; text-align: center; padding: 6px;">
+                                            <t t-if="l['discount'] and l['discount'] > 0" t-esc="int(l['discount'])"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 6px; font-weight: bold;">₹
+                                            <t t-esc="'{0:,.2f}'.format(l['price_subtotal_incl'])"/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="subtotal_gross" t-value="subtotal_gross + l['price_subtotal_incl']"/>
+                                    <t t-set="order_discount" t-value="subtotal_gross - o.amount_total"/>
+                                    <t t-set="i" t-value="i+1"/>
+                                    <t t-set="calculated_tax" t-value="calculated_tax + (l['price_subtotal_incl'] - l['price_subtotal'])"/>
+                                </t>
+
+                                <!-- Footer Totals Row -->
+                                <tr style="border-top: 1px solid black; font-weight: bold;">
+                                    <td style="border-right: white;"></td>
+                                    <td style="border: none;"></td>
+                                    <td style="border: none; text-align: center;">
+                                        <t t-esc="'%.0f' % total_qty_count"/>
+                                    </td>
+                                    <td style="border: white; text-align: center;">
+                                        <t t-esc="'%.3f' % total_weight_count"/>
+                                    </td>
+                                    <td style="border: white;"></td>
+                                    <td style="border: white;"></td>
+                                    <td style="text-align:right; padding:6px; border-left: white">
+                                        ₹ <t t-esc="'{0:,.2f}'.format(subtotal_gross)"/>
+                                    </td>
+                                </tr>
+
+                                <t t-set="gst_total" t-value="(o.amount_total * 5) / 100"/>
+                                <tr style="border-top: 1px solid black; font-weight: bold;">
+                                    <td colspan="2" style="border-right: white; padding: 6px; text-align: left;">
+                                        CGST : ₹ <t t-esc="'%.2f' % (gst_total / 2)"/>
+                                    </td>
+                                    <td colspan="2" style="padding: 6px; text-align: left; border: white;">
+                                        SGST : ₹ <t t-esc="'%.2f' % (gst_total / 2)"/>
+                                    </td>
+                                    <td colspan="3" style="text-align:right; padding:6px; border: white;">
+                                        <t t-if="order_discount and order_discount > 0">
+                                            Discount : ₹ <t t-esc="'%.2f' % order_discount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="float: right; width: 140px; border: 1px solid black; border-top: none; padding: 5px; margin-top: -1px; text-align: right;">
+                            <span style="font-weight: bold;">Total : ₹
+                                <t t-esc="'{0:,.2f}'.format(o.amount_total)"/>
+                            </span>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <br/><br/>
+                        <div style="font-size: 11px; font-weight: bold; line-height: 1.5;">
+                            NOTE: Goods sold once will not be taken back (or) Exchanged.
+                            <br/><br/>
+                            This is Computer Generated Invoice Hence Signature not Required
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

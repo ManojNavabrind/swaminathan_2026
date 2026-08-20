@@ -1,0 +1,25 @@
+
+{
+    "name": "Point Of Sale Receipt",
+    "author": "NavabrindIT Solutions",
+    "website": "",
+    "support": "support@softhealer.com",
+    "category": "Point Of Sale",
+    "summary": "Point of sale receipt",
+    "description": """Point of sale receipt""",
+    "version": "0.0.1",
+    "depends": ["web","point_of_sale"],
+    "application": True,
+    'assets': {'point_of_sale._assets_pos': [
+        'print_pos_receipt/static/src/js/order_receipt_patch.js',
+        'print_pos_receipt/static/src/js/pos_receipt.js',
+        'print_pos_receipt/static/src/xml/receipt.js',
+        'print_pos_receipt/static/src/xml/pos_receipt.xml',
+        ],
+               },
+    "auto_install": False,
+    "installable": True,
+    "price": 50,
+    "currency": "EUR",
+    "license": "OPL-1",
+}

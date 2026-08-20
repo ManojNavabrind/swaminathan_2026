@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_retail_invoice" model="report.paperformat">
+        <field name="name">Retail Invoice PaperFormat</field>
+        <field name="default" eval="True"/>
+        <field name="format">A5</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">38</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">40</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_retail_invoice" model="ir.actions.report">
+        <field name="name">Retail Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">retail_invoice_print.retail_invoice_report</field>
+        <field name="report_file">retail_invoice_print.retail_invoice_report</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="print_report_name">('Retail Invoice - %s' % object.name)</field>
+        <field name="paperformat_id" ref="retail_invoice_print.paperformat_retail_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+
+    <template id="retail_invoice_report">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <link rel="stylesheet" type="text/css" href="/packing_list_report/static/src/css/font.css"/>
+                <div class="font-roboto-thin">
+                    <div class="header">
+                        <t t-foreach="docs" t-as="o">
+                            <div style="float:left;width:100%;color: #666;font-weight:bold;line-height:1.5;">
+                                <div style="float:left;width:60%;margin-top:23px;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                         style="max-width: 60%;"/>
+                                </div>
+                                <div style="float:right;width: 40%;text-align:right;">
+<!--                                    <t t-esc="o.company_id.name"/>-->
+                                    <t t-if="o.company_id.street">
+                                        <br/>
+                                        <t t-esc="o.company_id.street"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <t t-esc="o.company_id.street2"/>
+                                        <br/>
+                                    </t>
+                                    <t t-esc="o.company_id.city"/><span>,</span>
+                                    Pin - <t t-esc="o.company_id.zip"/>
+                                        <br/>
+                                    <t t-esc="o.company_id.state_id.name"/><span>,</span>
+                                    <t t-esc="o.company_id.country_id.name"/>
+                                    <br/>
+
+                                    <t t-if="o.company_id.vat">
+                                          <span>GSTIN: <t t-esc="o.company_id.vat"/></span>
+                                      </t><br/>
+                                      <t t-if="o.company_id.pan_no">
+                                          <span>PAN: <t t-esc="o.company_id.pan_no"/></span>
+                                      </t>
+                                </div>
+
+                            </div>
+                        </t>
+
+                        <div style="clear:both;"></div>
+                        <div style="border-top: 1px solid #DEDBDA; color:#DEDBDA; margin-top: 10px;"/>
+                    </div>
+                    <div class="page">
+
+                        <t t-foreach="docs" t-as="o">
+
+                            <h4 style="text-align:center;color:#817E7E">
+                                <strong>CASH BILL</strong>
+
+                            </h4>
+                            <br/>
+                            <div style="width: 100%;">
+                                <div style="width: 65%; float: left;">
+                                    <strong>Name</strong>
+                                    <br/>
+                                    <t t-esc="o.partner_id.name"/>
+                                </div>
+                                <div style="width: 35%; float: left;">
+                                    <strong>Phone No.</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.partner_id.phone"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <div style="width: 100%;">
+                                <div style="width: 30%; float: left;">
+                                    <strong>Invoice No</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.name"/>
+                                    </span>
+                                </div>
+                                <div style="width: 35%; float: left;">
+                                    <strong>Invoice Date</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.invoice_date"
+                                           t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </div>
+                                <div style="width: 35%; float: right;">
+                                    <strong>Due Date</strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="o.invoice_date_due"
+                                           t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <t t-set="sale_orders" t-value="o.mapped('invoice_line_ids.sale_line_ids.order_id')"/>
+                            <t t-foreach="sale_orders" t-as="sale_order">
+                                <t t-if="o.name in sale_order.invoice_ids.mapped('name')">
+                                    <t t-set="sale_order_no" t-value="sale_order.name"/>
+                                </t>
+                            </t>
+                            <t t-set="count" t-value="1"/>
+                            <t t-set="qty" t-value="0"/>
+                            <t t-set="total_price" t-value="0"/>
+                            <t t-set="discount" t-value="0"/>
+                            <t t-set="tax" t-value="0"/>
+                            <t t-set="disc" t-value="0"/>
+                            <table class="table table-condensed table-bordered"
+                                   style="border: 2px solid black; border-collapse: collapse;">
+<!--                                <thead>-->
+                                    <tr>
+                                        <th style="text-align:center;">S.No.</th>
+<!--                                        <th>Product Name</th>-->
+                                        <th style="text-align:left;">Description-Code</th>
+                                        <th style="text-align:center;">Qty</th>
+                                        <th style="text-align:right;">Rate</th>
+                                        <th style="text-align:center;">Disc.</th>
+                                        <th style="text-align:right;">Amount</th>
+                                    </tr>
+<!--                                </thead>-->
+
+                                <tbody style="font-size:14px;font-weight:normal">
+
+                                    <t t-set="sgst" t-value="0"/>
+                                    <t t-set="cgst" t-value="0"/>
+                                    <t t-foreach="o.invoice_line_ids" t-as="lines">
+                                        <t t-if="lines.tax_ids">
+                                            <t t-foreach="lines.tax_ids" t-as="taxes">
+                                                <t t-if="taxes.children_tax_ids">
+                                                    <t t-foreach="taxes.children_tax_ids" t-as="ids">
+                                                        <t t-if="ids.description == 'SGST'">
+                                                            <t t-set="sgst"
+                                                               t-value="sgst+((ids.amount/100)*lines.price_subtotal)"/>
+                                                        </t>
+                                                        <t t-else="ids.description == 'CGST'">
+                                                            <t t-set="cgst"
+                                                               t-value="cgst+((ids.amount/100)*lines.price_subtotal)"/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-set="tax" t-value="taxes.amount"/>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="tax" t-value="0"/>
+                                        </t>
+
+
+                                        <tr>
+                                            <td style="width:10%;text-align:center;">
+                                                <span>
+                                                    <t t-esc="count"/>
+                                                </span>
+                                            </td>
+                                             <td style="width:40%;text-align:left;">
+                                                <span>
+                                                    <t t-esc="lines.name"/>
+                                                </span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                <span>
+                                                    <t t-esc="lines.quantity"/>
+                                                </span>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <span>
+<!--                                                    <t t-esc="lines.price_unit"/>-->
+                                            <t t-esc="lines.price_unit" t-options='{"widget": "monetary", "display_currency": lines.currency_id}'/>
+
+                                                </span>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                <span>
+                                                    <t t-esc="lines.discount"/>
+                                                </span>
+                                            </td>
+                                            <td style="text-align:right;">
+                                                <span>
+<!--                                                    <t t-esc="o.currency_id.symbol"/>-->
+<!--                                                    <t t-esc="lines.price_subtotal"/>-->
+                                            <t t-esc="lines.price_subtotal" t-options='{"widget": "monetary", "display_currency": lines.currency_id}'/>
+
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                        <t t-set="count" t-value="count+1"/>
+                                        <t t-set="qty" t-value="qty+lines.quantity"/>
+                                        <t t-set="total_price" t-value="total_price+lines.price_subtotal"/>
+                                        <t t-set="discount" t-value="discount+lines.discount"/>
+                                        <t t-set="disc" t-value="disc+(lines.price_unit-lines.price_subtotal)"/>
+                                    </t>
+
+                                </tbody>
+                                <!--                            <tr></tr>-->
+                            </table>
+                            <div style="float:right;">
+                                <hr style="border-top: 1px solid black; margin-top: 10px;"/>
+                                <span style="color:#817E7E;">
+                                    <strong>Untaxed Amount:</strong>
+                                </span>
+                                <span class="total_amount" style="float:right;">
+<!--                                     <t t-esc="o.currency_id.symbol"/>-->
+                                <t t-esc="total_price" t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}' />
+
+                                </span>
+
+                                <br/>
+
+                               <span style="color:#817E7E;">
+                                        <strong>CGST :</strong>
+                                    </span>
+                                 <span style="float:right;">
+<!--                                    <t t-esc="o.currency_id.symbol"/>-->
+<!--                                    <t t-esc="round(cgst,2)"/>-->
+                                <t t-esc="cgst" t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}' />
+
+                                </span>
+                                <br/>
+                                <span style="color:#817E7E;">
+                                        <strong>SGST :</strong>
+                                    </span>
+                                 <span style="float:right;">
+<!--                                    <t t-esc="o.currency_id.symbol"/>-->
+<!--                                    <t t-esc="round(sgst,2)"/>-->
+                                <t t-esc="sgst" t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}' />
+
+                                </span>
+                                <br/>
+                                <!--                                <strong>Discount  </strong><span><t t-esc="discount"/></span><strong>% : </strong><span><t t-esc="round(disc,2)"/></span><br/>-->
+                                <hr style="border-top: 2px solid black; margin-top: 10px;"/>
+                                <strong>Total :
+                                  <span style="float:right;">
+<!--                                <t t-esc="o.currency_id.symbol"/>-->
+<!--                                <t t-esc="o.amount_total"/>-->
+                                <t t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": lines.currency_id, "precision": 2}' />
+
+                                 </span>
+                                </strong>
+                                <br/>
+
+                            </div>
+                            <t t-if="sale_orders">
+                             <div style="width:70%;padding-top:30%;font-size:14px">
+                                <strong>
+                                    <t t-esc="sale_orders.pricelist_id.note"/>
+                                </strong>
+                            </div>
+                            </t>
+                        </t>
+                        <div class="footer">
+                            <div class="text-center" style="border-top: 1px solid black; padding-top: 10px;font-size:14px;color: #666;font-weight:bold">
+                                <span>
+                                    <t t-esc="o.company_id.phone"/>
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <t t-esc="o.company_id.email"/>
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <t t-esc="o.company_id.website"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

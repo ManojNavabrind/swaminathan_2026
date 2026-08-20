@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_order_inherit_form_view" model="ir.ui.view">
+        <field name="name">pos.order.inherit.form.view</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]/field[@name='lines']/tree/field[@name='product_uom_id']" position="after"> 
+                <field name="secondary_qty" /><field name="secondary_uom_id" string="Secondary UoM" /> </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                  <field name="bill_no"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pos_order_inherit_tree_view" model="ir.ui.view">
+        <field name="name">pos.order.inherit.tree.view</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='name']" position="before">
+                <field name="bill_no"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

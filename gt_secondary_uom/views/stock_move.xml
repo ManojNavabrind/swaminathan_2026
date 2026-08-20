@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_picking_form_section_note" model="ir.ui.view">
+        <field name="name">stock.picking.form.section.note</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Enable Section Widget -->
+            <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                <attribute name="widget">section_and_note_one2many</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='move_ids_without_package']/tree" position="inside">
+                <field name="display_type" column_invisible="1"/>
+                <field name="company_id"  column_invisible="1"/>
+                <control>
+                    <create string="Add a line"/>
+                    <create string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                    <create string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                </control>
+            </xpath>
+
+            <xpath expr="//field[@name='move_ids_without_package']/tree" position="inside">
+                <button name="action_show_details_wizard"
+                        type="object"
+                        icon="fa-list"
+                        title="Detailed Operations"
+                        invisible="display_type in ('line_section', 'line_note') or parent.state == 'draft'"/>
+            </xpath>
+
+            <!-- Sequence Handle -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="before">
+                <field name="sequence" widget="handle"/>
+            </xpath>
+
+            <!-- Text Field for Note Content -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="name"
+                       widget="section_and_note_text"
+                       optional="show"
+                       placeholder="Type your note here..."/>
+            </xpath>
+
+            <!-- Product Optional -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="attributes">
+                <attribute name="required">not display_type</attribute>
+                <attribute name="invisible">display_type in ('line_section', 'line_note')</attribute>
+            </xpath>
+
+            <!-- UoM Optional (Fixes Browser Validation) -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="attributes">
+                <attribute name="required">not display_type</attribute>
+                <attribute name="invisible">display_type in ('line_section', 'line_note')</attribute>
+            </xpath>
+
+            <!-- Hide Quantity -->
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity']" position="attributes">
+                 <attribute name="invisible">display_type in ('line_section', 'line_note')</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

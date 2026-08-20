@@ -1,0 +1,472 @@
+<odoo>
+    <record id="report_customsreport_format" model="report.paperformat">
+        <field name="name">Packing List</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">46</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">43</field>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="dpi">90</field>
+        <field name="default" eval="False"/>
+    </record>
+    <template id="report_custom_report_category">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="sale"
+                       t-value="request.env['sale.order'].sudo().search([('name','=',o.origin)], limit=1)"/>
+                    <div class="page" style="font-family: 'Arial', sans-serif; font-size: 13px;">
+                        <div class="header">
+                            <div style="width: 100%; display: inline-block; line-height: 1.5; color: #333;">
+                                <div style="float: left; width: 60%; margin-top: 10px;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                         style="max-height: 100px; width: auto;"/>
+                                </div>
+                                <div style="float: right; width: 40%; text-align: right; font-size: 13px;">
+                                    <t t-if="o.company_id.street">
+                                        <span t-field="o.company_id.street"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <span t-field="o.company_id.street2"/>
+                                        <br/>
+                                    </t>
+                                    <span t-field="o.company_id.city"/>
+                                    , Pin -
+                                    <span t-field="o.company_id.zip"/>
+                                    <br/>
+                                    <span t-field="o.company_id.state_id.name"/>
+                                    ,
+                                    <span t-field="o.company_id.country_id.name"/>
+                                    <br/>
+                                    <strong>GSTIN:</strong>
+                                    <span t-field="o.company_id.vat"/>
+                                    <br/>
+                                    <strong>PAN:</strong>
+                                    <span t-field="o.company_id.pan_no"/>
+                                </div>
+                            </div>
+                            <div style="clear: both; border-bottom: 1px solid #ccc; padding-top: 10px;"/>
+                        </div>
+                        <h4 style="text-align:center; margin-top: 20px; font-weight:bold; text-transform: uppercase;">
+                            CUSTOMS REPORT
+                        </h4>
+                        <table class="table table-bordered"
+                               style="border: 1px solid black; margin-top: 20px; width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 25%; padding: 5px;">
+                                    <strong>Invoice No</strong>
+                                    <br/>
+                                    <t t-if="sale.manual_invoice_no">
+                                        <span t-field="sale.manual_invoice_no"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-foreach="sale.invoice_ids" t-as="inv">
+                                            <span t-field="inv.name"/>
+                                            <br/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="width: 25%; padding: 5px;">
+                                    <strong>Invoice Date</strong>
+                                    <br/>
+                                    <t t-if="sale.manual_invoice_date">
+                                        <span t-field="sale.manual_invoice_date"
+                                              t-options='{"widget":"date","format":"dd-MM-yyyy"}'/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-foreach="sale.invoice_ids" t-as="inv">
+                                            <span t-field="inv.invoice_date"
+                                                  t-options='{"widget":"date","format":"dd-MM-yyyy"}'/>
+                                            <br/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="width: 25%; padding: 5px;">
+                                    <strong>Exporter's Ref</strong>
+                                    <br/>
+                                    <span t-field="o.expoter_ref"/>
+                                </td>
+                                <td style="width: 25%; padding: 5px;">
+                                    <strong>IEC No</strong>
+                                    <br/>
+                                    <span t-field="o.iec_no"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px;">
+                                    <strong>Buyer's Order No</strong>
+                                    <br/>
+                                    <span t-field="o.buyer_order_no"/>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <strong>Buyer's Date</strong>
+                                    <br/>
+                                    <span t-field="o.buyer_date" t-options='{"widget":"date","format":"dd-MM-yyyy"}'/>
+                                </td>
+                                <td colspan="2" style="padding: 5px;">
+                                    <strong>Other Reference</strong>
+                                    <br/>
+                                    <span t-field="o.note"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="width: 50%; padding: 10px;">
+                                    <strong style="font-size: 14px;">Shipping To</strong>
+                                    <br/>
+                                    <div style="padding-left: 15px;text-align:center;">
+                                        <span t-field="sale.partner_shipping_id.name"/>
+                                        <br/>
+                                        <span t-field="sale.partner_shipping_id.street"/>
+                                        <br/>
+                                        <span t-field="sale.partner_shipping_id.city"/>
+                                        <br/>
+                                        <span t-field="sale.partner_shipping_id.state_id.name"/>
+                                        ,
+                                        <span t-field="sale.partner_shipping_id.zip"/>
+                                        <br/>
+                                        <strong>Ph:</strong>
+                                        <span t-field="sale.partner_shipping_id.phone"/>
+                                    </div>
+                                </td>
+                                <td colspan="2" style="width: 50%; padding: 10px;">
+                                    <strong style="font-size: 14px;">Buyer</strong>
+                                    <br/>
+                                    <div style="padding-left: 15px;text-align:center;">
+                                                <t t-if="o.vendor_address">
+                                                    <t t-esc="o.vendor_address"/>
+                                                    <br/>
+                                                    </t>
+                                                    <t t-else="">
+                                                </t>
+<!--                                        <span t-field="o.partner_id.name"/>-->
+<!--                                        <br/>-->
+<!--                                        <span t-field="o.partner_id.street"/>-->
+<!--                                        <br/>-->
+<!--                                        <span t-field="o.partner_id.city"/>-->
+<!--                                        <br/>-->
+<!--                                        <span t-field="o.partner_id.state_id.name"/>-->
+<!--                                        ,-->
+<!--                                        <span t-field="o.partner_id.zip"/>-->
+<!--                                        <br/>-->
+<!--                                        <strong>Ph:</strong>-->
+<!--                                        <span t-field="o.partner_id.phone"/>-->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px;">
+                                    <strong>Pre-Carriage by</strong>
+                                    <br/>
+                                    <span t-field="o.pre_carraige"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <strong>Place of Receipt</strong>
+                                    <br/>
+                                    <span t-field="o.place_of_receipt"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <strong>Country of Origin</strong>
+                                    <br/>
+                                    <span t-field="o.country_of_origin.name"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <strong>Country Destination</strong>
+                                    <br/>
+                                    <span t-field="o.country_of_dest.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px;">
+                                    <strong>Vessel / Flight No.</strong>
+                                    <br/>
+                                    <span t-field="o.flight_no"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <strong>Port of Loading</strong>
+                                    <br/>
+                                    <span t-field="o.port_of_loading"/>
+                                </td>
+                                <td colspan="2" style="padding:6px;">
+                                    <strong>Delivery Terms</strong>
+                                    <br/>
+                                    <span t-field="sale.incoterm.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px;">
+                                    <strong>Port of Discharge</strong>
+                                    <br/>
+                                    <span t-field="o.port_of_discharge"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <strong>Place of Discharge</strong>
+                                    <br/>
+                                    <span t-field="o.place_of_discharge"/>
+                                </td>
+                                <td colspan="2" style="padding:6px;">
+                                    <strong>Payment Terms</strong>
+                                    <br/>
+                                    <span t-field="sale.payment_term_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                    <td style="width: 25%;padding:4px 12px;">
+                                        <strong>Marks and Nos.</strong>
+                                        <br/>
+                                        <span>
+                                            <t t-esc="o.marks_no"/>
+                                        </span>
+                                    </td>
+                                    <td style="width: 25%;padding:4px 12px;">
+                                        <strong>Container No.</strong>
+                                        <br/>
+                                        <span>
+                                            <t t-esc="o.container_no"/>
+                                        </span>
+                                    </td>
+                                    <td style="width: 25%;padding:4px 12px;">
+                                        <strong>No.of Pkgs.</strong>
+                                        <br/>
+                                        <span>
+                                            <t t-esc="o.no_pkgs"/>
+                                        </span>
+                                    </td>
+                                    <td style="width: 25%;padding:4px 12px;">
+                                        <strong>Kind of Pkgs.</strong>
+                                        <br/>
+                                        <span>
+                                            <t t-esc="o.pkgs_kind"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                        </table>
+                        <div style="margin-top: 30px;">
+                            <table class="table table-bordered"
+                                   style="border: 2px solid black; width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>S.No</th>
+                                        <th>Category</th>
+                                        <th>Net Weight</th>
+<!--                                        <th>Secondary Quantity</th>-->
+                                        <th>Total Quantity</th>
+                                        <th>Rate</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="grand_total_qty" t-value="0.0"/>
+                                    <t t-set="grand_total_amount" t-value="0.0"/>
+                                    <t t-set="grand_total_cat_weight" t-value="0.0"/>
+                                    <t t-set="tax_summary" t-value="{}"/>
+                                    <t t-set="categories"
+                                       t-value="list(set(sale.order_line.filtered(lambda l: not l.display_type).mapped('product_id.categ_id.main_category_id')))"/>
+                                    <t t-set="serial_no" t-value="1"/>
+                                    <t t-foreach="categories" t-as="category">
+                                        <t t-set="first_line"
+                                           t-value="sale.order_line.filtered(lambda l: l.product_id.categ_id.main_category_id == category and not l.display_type)[0]"/>
+                                        <t t-set="cat_lines"
+                                           t-value="sale.order_line.filtered(lambda l: l.product_id.categ_id.main_category_id == category and not l.display_type)"/>
+                                        <t t-set="cat_moves"
+                                           t-value="o.move_ids.filtered(lambda m: m.product_id.categ_id.main_category_id == category)"/>
+                                        <t t-set="cat_net_weight"
+                                           t-value="sum([m.weight or 0.0 for m in o.move_ids.filtered(lambda m: m.product_id.categ_id.main_category_id == category)])"/>
+                                        <!--                                         <t t-set="cat_qty" -->
+                                        <!--                                            t-value="sum([x or 0.0 for x in cat_lines.mapped('secondary_qty')])"/> -->
+                                        <t t-set="cat_qty"
+                                           t-value="sum([m.secondary_qty or 0.0 for m in o.move_ids.filtered(lambda m: m.product_id.categ_id.main_category_id == category)])"/>
+                                        <t t-set="cat_amount"
+                                           t-value="sum([x or 0.0 for x in cat_lines.mapped('price_subtotal')])"/>
+                                        <t t-set="grand_total_qty" t-value="grand_total_qty + cat_qty"/>
+                                        <t t-set="grand_total_amount" t-value="grand_total_amount + cat_amount"/>
+                                        <t t-set="grand_total_cat_weight"
+                                           t-value="grand_total_cat_weight + cat_net_weight"/>
+                                        <tr style="font-size:12px; text-style:center;">
+                                            <td style="border:1px solid black; text-align:center;">
+                                                <span t-esc="serial_no"/>
+                                                <t t-set="serial_no" t-value="serial_no + 1"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:5px; text-style:center;">
+                                                <span t-field="category.name"/>
+                                            </td>
+                                            <td style="border:1px solid black; text-align:center;">
+                                                <span t-esc="'%.3f' % cat_net_weight"/>
+                                            </td>
+<!--                                            <td>-->
+<!--                                            <t t-esc="cat_moves and cat_moves[0].move_line_ids and cat_moves[0].move_line_ids[0].secondary_done or 0"/>-->
+<!--                                            </td>-->
+
+                                            <td style="border:1px solid black; text-align:center;">
+                                                <span t-esc="'%.0f' % cat_qty"/>
+                                            </td>
+                                            <td style="border:1px solid black; text-align:right; padding:5px;">
+                                                <t t-if="cat_qty">
+                                                    <span t-esc="cat_amount / cat_qty"
+                                                          t-options='{"widget":"monetary","display_currency":sale.currency_id}'/>
+                                                </t>
+                                            </td>
+                                            <td style="border:1px solid black; text-align:right; padding:5px;">
+                                                <span t-esc="cat_amount"
+                                                      t-options='{"widget":"monetary","display_currency":sale.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <!--  TAX SUMMARY START  -->
+                                    <t t-foreach="sale.order_line" t-as="line">
+                                        <t t-foreach="line.tax_id" t-as="tax">
+                                            <t t-if="tax.amount_type == 'percent'">
+                                                <t t-set="tax_name" t-value="tax.tax_group_id.name"/>
+                                                <t t-set="tax_amount" t-value="line.price_subtotal * tax.amount / 100"/>
+                                                <t t-if="tax_name in tax_summary">
+                                                    <t t-set="dummy"
+                                                       t-value="tax_summary.update({tax_name:tax_summary[tax_name] + tax_amount})"/>
+                                                </t>
+                                                <t t-if="tax_name not in tax_summary">
+                                                    <t t-set="dummy"
+                                                       t-value="tax_summary.update({tax_name: tax_amount})"/>
+                                                </t>
+                                            </t>
+                                            <t t-if="tax.amount_type == 'group'">
+                                                <t t-foreach="tax.children_tax_ids" t-as="child_tax">
+                                                    <t t-set="child_tax_name" t-value="child_tax.tax_group_id.name"/>
+                                                    <t t-set="child_tax_amount"
+                                                       t-value="line.price_subtotal * child_tax.amount / 100"/>
+                                                    <t t-if="child_tax_name in tax_summary">
+                                                        <t t-set="dummy"
+                                                           t-value="tax_summary.update({child_tax_name:tax_summary[child_tax_name] + child_tax_amount})"/>
+                                                    </t>
+                                                    <t t-if="child_tax_name not in tax_summary">
+                                                        <t t-set="dummy"
+                                                           t-value="tax_summary.update({ child_tax_name: child_tax_amount })"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <!--  SHOW TAX  -->
+                                    <t t-foreach="tax_summary.items()" t-as="tax">
+                                        <tr>
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td style="text-align:right; font-weight:bold;">
+                                                <t t-esc="tax[0]"/>
+                                                :
+                                            </td>
+                                            <td style="text-align:right; padding-right:5px;">
+                                                <span t-esc="tax[1]"
+                                                      t-options='{"widget":"monetary","display_currency":sale.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <!--  TAX SUMMARY END  -->
+                                    <tr style="font-weight:bold;">
+                                        <td style="border:1px solid black; text-align:right; padding:5px;"></td>
+                                        <td style="border:1px solid black;"/>
+                                        <td style="border:1px solid black; text-align:center;">
+                                            <span t-esc="'%.3f' % grand_total_cat_weight"/>
+                                        </td>
+                                        <td style="border:1px solid black; text-align:center;">
+                                            <span t-esc="'%.0f' % grand_total_qty"/>
+                                        </td>
+                                        <td style="border:1px solid black;"/>
+                                        <td style="border:1px solid black; text-align:right; padding:5px;">
+                                            <span t-esc="grand_total_amount+ sum(tax_summary.values())"
+                                                  t-options='{"widget":"monetary","display_currency":sale.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="margin-top: 30px; font-weight: bold; line-height: 2.0; font-size: 14px; color: black; font-family: 'Arial', sans-serif;">
+                                <!--                                 <t t-set="total_pieces" -->
+                                <!--                                    t-value="sum([x or 0.0 for x in sale.order_line.filtered(lambda l: not l.display_type).mapped('secondary_qty')])"/> -->
+                                <t t-set="total_pieces" t-value="sum([m.secondary_qty or 0.0 for m in o.move_ids])"/>
+                                <t t-set="calc_net_weight" t-value="sum([m.weight or 0.0 for m in o.move_ids])"/>
+                                <t t-set="calc_gross_weight"
+                                   t-value="sum([m.gross_weight or 0.0 for m in o.move_ids])"/>
+                                <div style="text-transform: uppercase;">
+                                    TOTAL PIECES:
+                                    <span t-esc="'%.0f' % total_pieces"/>
+                                </div>
+                                <div style="text-transform: uppercase;">
+                                    TOTAL NET WEIGHT :
+                                    <span t-esc="'%.3f' % calc_net_weight"/>
+                                    <span style="margin-left: 80px;">
+                                        TOTAL GR.WGt:
+                                        <span t-esc="'%.3f' % calc_gross_weight"/>
+                                    </span>
+                                </div>
+                                <div style="text-transform: uppercase;">
+                                    TOTAL C.I.F. VALUE IN
+                                    <span t-esc="sale.currency_id.name"/>
+                                    :
+                                    <span t-esc="grand_total_amount"
+                                          t-options='{"widget": "monetary", "display_currency": sale.currency_id}'/>
+                                </div>
+                                <div style="text-transform: uppercase;">
+                                    TOTAL C.I.F. VALUE IN
+                                    <span t-esc="sale.currency_id.name"/>
+                                    :
+                                    <span style="text-transform: none;"
+                                          t-esc="sale.currency_id.amount_to_text(grand_total_amount)"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width:100%; border:2px solid black; overflow:hidden; font-size:11px; margin-top:10px; page-break-inside: avoid;">
+                            <!--  LEFT  -->
+                            <div style="width:68%; float:left; min-height:120px; padding:10px; box-sizing:border-box;">
+                                <div style="margin-top:10px;">
+                                    <strong>Declaration :</strong>
+                                    <br/>
+                                    We declare that this Invoice shows the actual price of the goods described and that
+                                    all particulars are true and correct.
+                                </div>
+                            </div>
+                            <!--  RIGHT  -->
+                            <div style="width:32%; float:left; border-left:2px solid black; min-height:120px; text-align:center; padding-top:8px; box-sizing:border-box;">
+                                <div style="font-weight:bold;">Signature &amp; Date</div>
+                                <div style="margin-top:5px;">
+                                    For
+                                    <span t-field="o.company_id.name"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <div style="border-top: 1px solid black; padding-top: 8px; text-align: center; font-size: 13px; color: #666; font-weight: bold;">
+                                <span t-field="o.company_id.phone"/>
+                                <span style="margin-left: 20px;">
+                                    <span t-field="o.company_id.email"/>
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <span t-field="o.company_id.website"/>
+                                </span>
+                                <div class="text-muted" style="font-size: 10px;">
+                                    Page:
+                                    <span class="page"/>
+                                    /
+                                    <span class="topage"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <record id="action_report_custom_report" model="ir.actions.report">
+        <field name="name">Custom Report</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">packing_list_report.report_custom_report_category</field>
+        <field name="report_file">packing_list_report.report_custom_report_category</field>
+        <field name="paperformat_id" ref="packing_list_report.report_customsreport_format"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

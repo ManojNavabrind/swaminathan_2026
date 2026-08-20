@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="product_pricelist_item_form_inherit" model="ir.ui.view">
+            <field name="name">product.pricelist.item</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <group name="pricelist_rule_method" position="after">
+                    <group name="pricelist_sale_compute">
+                        <group string="Price Computation" invisible="compute_price != 'formula'">
+                            <field name="evaluation"/>
+                            <field name="purchase_expense" invisible="parent.type != 'export'"/>
+                            <field name="expense"/>
+                            <field name="packing" invisible="parent.type != 'export'"/>
+                            <field name="tax_id"/>
+                            <field name="margin"/>
+                            <field name="original_price" column_invisible="True"/>
+                        </group>
+                    </group>
+                </group>
+            </field>
+        </record>
+        <record id="product_pricelist_item_tree_inherit" model="ir.ui.view">
+            <field name="name">product.pricelist.item.tree</field>
+            <field name="model">product.pricelist.item</field>
+            <field name="inherit_id" ref="product.product_pricelist_item_tree_view_from_product"/>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fixed_price']" position="after">
+                    <field name="original_price"/>
+                </xpath>
+                <xpath expr="//field[@name='fixed_price']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_pricelist_form_inherits" model="ir.ui.view">
+            <field name="name">product.pricelist</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view"/>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="before">
+                    <field name="type"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product1_template1_inherit_view" model="ir.ui.view">
+            <field name="name">product_product_inherit_view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="before">
+<!--                    <field name="evaluation" string="Evaluation (%)" invisible="product_variant_count &gt; 1" force_save ='1'/>-->
+<!--                    <field name="expenditure" string="Expenditure (%)" invisible="product_variant_count &gt; 1"/>-->
+<!--                    <field name="profit_margin" string="Profit Margin (%)" invisible="product_variant_count &gt; 1"/>-->
+                    <field name="secondary_cost_price"/>
+                    <field name="secondary_sale_price"/>
+                </xpath>
+                <xpath expr="//field[@name='categ_id']" position="before">
+                    <field name="date_of_purchase"/>
+                    <field name="evaluation_id"/>
+                </xpath>
+                 <xpath expr="//label[@for='weight']" position="before">
+                     <label for="length"/>
+                     <div class="o_row">
+                         <field name="length" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                     <label for="width"/>
+                     <div class="o_row">
+                         <field name="width" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                     <label for="height"/>
+                     <div class="o_row">
+                         <field name="height" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_product_inherit_view" model="ir.ui.view">
+            <field name="name">product_product_inherit_view</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="before">
+<!--                    <field name="evaluation" string="Evaluation (%)" force_save ='1'/>-->
+<!--                    <field name="expenditure" string="Expenditure (%)" force_save ='1'/>-->
+<!--                    <field name="profit_margin" string="Profit Margin (%)" force_save ='1'/>-->
+                    <field name="secondary_cost_price"/>
+                    <field name="secondary_sale_price"/>
+
+                </xpath>
+                 <xpath expr="//field[@name='categ_id']" position="before">
+                    <field name="date_of_purchase"/>
+                    <field name="evaluation_id"/>
+                </xpath>
+                <xpath expr="//label[@for='weight']" position="before">
+                     <label for="length"/>
+                     <div class="o_row">
+                         <field name="length" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                     <label for="width"/>
+                     <div class="o_row">
+                         <field name="width" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                     <label for="height"/>
+                     <div class="o_row">
+                         <field name="height" class="oe_inline"/>
+                         <span>in</span>
+                     </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_supplierinfo_tree_view_inherit1_new" model="ir.ui.view">
+        <field name="name">product.template.product.tree.inherit.new</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_name']" position="attributes">
+                <attribute name="optional"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_code']" position="attributes">
+                <attribute name="optional"></attribute>
+            </xpath>
+
+        </field>
+        </record>
+        <record id="stock_picking_view_form_inherit_quality1" model="ir.ui.view">
+            <field name="name">stock.picking.view.form.inherit.quality</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//button[1]" position="after">
+                        <button string="Scrap" name="scrap_wizard" type="object" class="oe_highlight"/>
+                    </xpath>
+            </field>
+         </record>
+         <record id="purchase_order_form_inherit_manual_date" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit.manual.date</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_order']" position="after">
+                    <field name="manual_purchase_date"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

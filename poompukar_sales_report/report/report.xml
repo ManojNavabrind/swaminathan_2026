@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sales_report_pdf" model="ir.actions.report">
+        <field name="name">Poompuhar sales report</field>
+        <field name="model">sale.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">poompukar_sales_report.poompukar_sales_report</field>
+        <field name="report_file">poompukar_sales_report.poompukar_sales_report</field>
+        <field name="print_report_name">Poompuhar Sales Report</field>
+    </record>
+
+
+    <template id="poompukar_sales_report">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <link rel="stylesheet" type="text/css" href="/poompukar_sales_report/static/src/css/font.css"/>
+                <div class="font-roboto-thin">
+                    <t t-set="company" t-value="request.env['res.company'].sudo().search([],limit=1)"/>
+                    <div class="header">
+                            <div style="float:left;width:100%;color: #666;font-weight:bold;line-height:1.5;">
+                                <div style="float:left;width:60%;margin-top:10px;">
+
+                                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                         style="max-width: 60%;"/>
+                                </div>
+                                <div style="float:right;width: 40%;text-align:right;margin-top:1px;">
+
+<!--                                    <t t-esc="company.name"/>-->
+                                    <t t-if="company.street">
+                                        <br/>
+                                        <t t-esc="company.street"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="company.street2">
+                                        <t t-esc="company.street2"/>
+                                        <br/>
+                                    </t>
+                                    <t t-esc="company.city"/><span>,</span>
+
+                                    Pin - <t t-esc="company.zip"/>
+                                    <br/>
+                                    <t t-esc="company.state_id.name"/><span>,</span>
+
+                                    <t t-esc="company.country_id.name"/>
+                                    <br/>
+                                    <t t-if="company.vat">
+                                          <span>GSTIN: <t t-esc="company.vat"/></span>
+                                    </t><br/>
+                                      <t t-if="company.pan_no">
+                                          <span>PAN: <t t-esc="company.pan_no"/></span>
+                                      </t>
+                                </div>
+                            </div>
+
+                        <div style="clear:both;"></div>
+                        <div style="border-top: 1px solid #DEDBDA; color:#DEDBDA; margin-top: 20px;"/>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <t t-if="not from_date and not to_date">
+                                <h4 style="text-align:center;color:#817E7E">
+                                    <span>Poompuhar Sales Report</span>
+                                </h4>
+                            </t>
+                            <t t-elif="from_date and to_date">
+                                <h4 style="text-align:center;color:#817E7E">
+                                    <span>Poompuhar Sales Report :
+                                        <t t-esc="from_date" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                        <span>-</span>
+                                        <t t-esc="to_date" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </h4>
+                            </t>
+                            <t t-elif="from_date">
+                                <h4 style="text-align:center;color:#817E7E">
+                                    <span>Poompuhar Sales Report As of :
+                                        <t t-esc="from_date" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </h4>
+                            </t>
+                            <t t-elif="to_date">
+                                <h4 style="text-align:center;color:#817E7E">
+                                    <span>Poompuhar Sales Report Till :
+                                        <t t-esc="to_date" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </span>
+                                </h4>
+                            </t>
+                            <t t-set="curr" t-value="request.env['res.currency'].sudo().search([('name','=','INR')])"/>
+                            <t t-if="not partner">
+                                <t t-set="customers"
+                                   t-value="request.env['res.partner'].sudo().search([('sale_order_count','>',0),('category_id.name','=','Poompuhar Sales')])"/>
+
+                                <t t-foreach="customers" t-as="customer">
+                                    <t t-if="not from_date and not to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',customer.id)])"/>
+                                    </t>
+                                    <t t-if="from_date and not to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',customer.id),('date_order','&gt;=',from_date)])"/>
+                                    </t>
+                                    <t t-if="not from_date and to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',customer.id),('date_order','&lt;=',to_date)])"/>
+                                    </t>
+                                    <t t-if="from_date and to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',customer.id),('date_order','&lt;=',to_date),('date_order','&gt;=',from_date)])"/>
+                                    </t>
+                                    <t t-if="sale_orders">
+                                        <strong>
+                                            <span>Customer Name:
+                                                <t t-esc="customer.name"/>
+                                            </span>
+                                        </strong>
+                                        <br/>
+                                        <t t-set="total_receivables" t-value="0"/>
+                                        <t t-foreach="sale_orders" t-as="sales">
+                                            <t t-if="sales.amount_unpaid != 0">
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                            <th style="text-align:left;">SO Number</th>
+                                                            <th style="text-align:center;">SO Date</th>
+                                                            <th style="text-align:right;">SO Amount</th>
+                                                            <th style="text-align:right;">Invoiced Amount</th>
+                                                            <th style="text-align:right;">Amount Due</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+
+                                                        <tr>
+                                                            <td style="text-align:left;">
+                                                                <span>
+                                                                    <t t-esc="sales.name"/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:center;">
+                                                                 <span>
+                                                                    <t t-esc="sales.date_order"
+                                                                       t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                <span>
+                                                                    <t t-esc="sales.amount_total" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id ,"precision": 2}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                 <span>
+                                                                    <t t-esc="sales.amount_total - sales.amount_unpaid" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id ,"precision": 2}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                 <span>
+                                                                    <t t-esc="sales.amount_unpaid" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id ,"precision": 2}'/>
+
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;width:80%;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                            <th style="text-align:left;">Invoice Number</th>
+                                                            <th style="text-align:center;">Invoice Date</th>
+                                                            <th style="text-align:right;">Amount Received / Invoiced</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+                                                        <t t-if="sales.invoice_ids">
+
+                                                        <t t-if="sales.invoice_ids.filtered(lambda inv: inv.state != 'cancel')">
+                                                            <t t-foreach="sales.invoice_ids.filtered(lambda inv: inv.state != 'cancel')" t-as="invoice">
+                                                                <t t-if="invoice.state != 'cancel'">
+                                                                <tr>
+                                                                    <td style="text-align:left;">
+                                                                         <span>
+                                                                            <t t-esc="invoice.name"/>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style="text-align:center;">
+                                                                         <span>
+                                                                            <t t-esc="invoice.invoice_date"
+                                                                               t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style="text-align:right;">
+                                                                         <span>
+                                                                            <t t-esc="invoice.amount_total" t-options='{"widget": "monetary", "display_currency": invoice.currency_id ,"precision": 2}'/>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                </t>
+                                                            </t>
+                                                        </t>
+                                                            <t t-else="">
+                                                                <tr>
+                                                                <td style="text-align:left;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <tr>
+                                                                <td style="text-align:left;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+
+
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                            <th style="text-align:left;">Product Name</th>
+                                                            <th style="text-align:center;">Ordered Qty</th>
+                                                            <th style="text-align:right;">Chargeable Amount</th>
+                                                            <th style="text-align:center;">Invoiced Qty</th>
+                                                            <th style="text-align:right;">Amount Invoiced</th>
+                                                            <th style="text-align:center;">Due Qty</th>
+                                                            <th style="text-align:right;">Amount Due</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+                                                        <t t-foreach="sales.order_line" t-as="line">
+                                                            <t t-if="line.tax_id">
+                                                                <t t-foreach="line.tax_id" t-as="taxes">
+                                                                    <t t-if="taxes.children_tax_ids">
+                                                                        <t t-foreach="taxes.children_tax_ids"
+                                                                           t-as="ids">
+                                                                            <t t-if="ids.description == 'SGST'">
+                                                                                <t t-set="sgst" t-value="ids.amount"/>
+                                                                            </t>
+                                                                            <t t-else="ids.description == 'CGST'">
+                                                                                <t t-set="cgst" t-value="ids.amount"/>
+                                                                            </t>
+                                                                        </t>
+                                                                        <t t-set="tax" t-value="sgst+cgst"/>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <t t-set="tax" t-value="taxes.amount"/>
+                                                                    </t>
+                                                                </t>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <t t-set="tax" t-value="0"/>
+                                                            </t>
+
+                                                            <tr>
+                                                                <td style="text-align:left;">
+                                                                     <span>
+                                                                        <t t-esc="line.product_id.name"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                     <span>
+                                                                        <t t-esc="line.product_uom_qty"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                     <span>
+                                                                        <t t-esc="line.price_total" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id ,"precision": 2}'/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                     <span>
+                                                                        <t t-esc="line.qty_invoiced"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <t t-if="line.price_subtotal != 0">
+                                                                        <t t-set="unit_value"
+                                                                           t-value="line.price_subtotal/line.product_uom_qty"/>
+                                                                        <t t-set="inv_amount"
+                                                                           t-value="line.qty_invoiced * unit_value"/>
+                                                                        <t t-set="tax_inv_amount"
+                                                                           t-value="(tax/100)*inv_amount"/>
+                                                                        <span>
+                                                                             <t t-esc="inv_amount+tax_inv_amount" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id ,"precision": 2}'/>
+
+                                                                        </span>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                         <t t-set="unit_value" t-value="0"/>
+                                                                         <t t-esc="unit_value" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id ,"precision": 2}'/>
+
+                                                                    </t>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <t t-set="due_qty"
+                                                                       t-value="line.product_uom_qty - line.qty_invoiced"/>
+                                                                    <span>
+                                                                        <t t-esc="due_qty"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                     <t t-set="due_amount" t-value="due_qty * unit_value"/>
+<!--                                                                <t t-esc="due_amount"/>-->
+                                                                <t t-set="tax_due_amount" t-value="round((sgst/100)*due_amount,2)"/>
+                                                                <t t-set="tax_due_amount1" t-value="round((cgst/100)*due_amount,2)"/>
+
+                                                                <span>
+                                                                    <t t-esc="due_amount+tax_due_amount+tax_due_amount1" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id, "precision": 2}'/>
+                                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+                                                <center><strong>________________________________________________________</strong></center>
+                                                <t t-set="total_receivables"
+                                                   t-value="total_receivables+sales.amount_unpaid"/>
+                                            </t>
+                                        </t>
+                                        <br/>
+                                        <table style="width: 30%; border-collapse: collapse;float:right">
+                                            <tr>
+                                                <td style="text-align: right; padding: 8px;">
+
+                                                <strong>
+                                                    <span>Total Receivable :
+                                                        <t t-esc="total_receivables"
+                                                          t-options='{"widget": "monetary", "display_currency": curr ,"precision": 2}'/>
+                                                    </span>
+                                                </strong>
+    <!--                                            <br/>-->
+                                                </td>
+                                            </tr>
+                                            </table>
+                                      <strong>____________________________________________________________________________________________________________________</strong>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-if="partner">
+                                <t t-set="partner_id" t-value="partner"/>
+                                <t t-foreach="partner_id" t-as="id_partner">
+                                    <t t-if="not from_date and not to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',id_partner)])"/>
+                                    </t>
+                                    <t t-if="from_date and not to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',id_partner),('date_order','&gt;=',from_date)])"/>
+                                    </t>
+                                    <t t-if="not from_date and to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',id_partner),('date_order','&lt;=',to_date)])"/>
+                                    </t>
+                                    <t t-if="from_date and to_date">
+                                        <t t-set="sale_orders" t-value="request.env['sale.order'].sudo().search([('state','=','sale')
+                                                                           ,('partner_id','=',id_partner),('date_order','&lt;=',to_date),('date_order','&gt;=',from_date)])"/>
+                                    </t>
+                                    <t t-if="sale_orders">
+                                        <t t-set="name"
+                                           t-value="request.env['res.partner'].sudo().search([('id','=',id_partner)])"/>
+                                        <strong>
+                                                <span>Customer Name:
+                                                <t t-esc="name.name"/>
+                                            </span>
+                                        </strong>
+                                        <br/>
+                                        <t t-set="total_receivables" t-value="0"/>
+                                        <t t-foreach="sale_orders" t-as="sales">
+                                            <t t-if="sales.amount_unpaid != 0">
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                           <th style="text-align:left;">SO Number</th>
+                                                            <th style="text-align:center;">SO Date</th>
+                                                            <th style="text-align:right;">SO Amount</th>
+                                                            <th style="text-align:right;">Invoiced Amount</th>
+                                                            <th style="text-align:right;">Amount Due</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+
+                                                        <tr>
+                                                            <td style="text-align:left;">
+                                                                <span>
+                                                                    <t t-esc="sales.name"/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:center;">
+                                                                <span>
+                                                                    <t t-esc="sales.date_order"
+                                                                       t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                <span>
+                                                                    <t t-esc="sales.amount_total" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id, "precision": 2}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                 <span>
+                                                                    <t t-esc="sales.amount_total - sales.amount_unpaid" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id ,"precision": 2}'/>
+                                                                </span>
+                                                            </td>
+                                                            <td style="text-align:right;">
+                                                                 <span>
+                                                                    <t t-esc="sales.amount_unpaid" t-options='{"widget": "monetary", "display_currency": sales.pricelist_id.currency_id ,"precision": 2}'/>
+
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;width:80%;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                             <th style="text-align:left;">Invoice Number</th>
+                                                            <th style="text-align:center;">Invoice Date</th>
+                                                            <th style="text-align:right;">Amount Received / Invoiced</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+                                                        <t t-if="sales.invoice_ids">
+                                                            <t t-if="sales.invoice_ids.filtered(lambda inv: inv.state != 'cancel')">
+                                                            <t t-foreach="sales.invoice_ids.filtered(lambda inv: inv.state != 'cancel')" t-as="invoice">
+
+                                                                <tr>
+                                                                    <td style="text-align:left;">
+                                                                        <span>
+                                                                            <t t-esc="invoice.name"/>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style="text-align:center;">
+                                                                        <span>
+                                                                            <t t-esc="invoice.invoice_date"
+                                                                               t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style="text-align:right;">
+                                                                        <span>
+                                                                            <t t-esc="invoice.amount_total" t-options='{"widget": "monetary", "display_currency": invoice.currency_id, "precision": 2}'/>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+
+                                                            </t>
+                                                                </t>
+                                                            <t t-else="">
+                                                                <tr>
+                                                                <td style="text-align:left;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <tr>
+                                                                <td style="text-align:left;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <span>
+                                                                        -
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+
+
+                                                <table class="table table-condensed table-bordered"
+                                                       style="border: 2px solid black; border-collapse: collapse;">
+<!--                                                    <thead>-->
+                                                        <tr>
+                                                            <th style="text-align:left;">Product Name</th>
+                                                            <th style="text-align:center;">Ordered Qty</th>
+                                                            <th style="text-align:right;">Chargeable Amount</th>
+                                                            <th style="text-align:center;">Invoiced Qty</th>
+                                                            <th style="text-align:right;">Amount Invoiced</th>
+                                                            <th style="text-align:center;">Due Qty</th>
+                                                            <th style="text-align:right;">Amount Due</th>
+                                                        </tr>
+<!--                                                    </thead>-->
+                                                    <tbody style="font-size:14px;font-weight:normal">
+                                                        <t t-foreach="sales.order_line" t-as="line">
+                                                            <t t-if="line.tax_id">
+                                                                <t t-foreach="line.tax_id" t-as="taxes">
+                                                                    <t t-if="taxes.children_tax_ids">
+                                                                        <t t-foreach="taxes.children_tax_ids"
+                                                                           t-as="ids">
+                                                                            <t t-if="ids.description == 'SGST'">
+                                                                                <t t-set="sgst" t-value="ids.amount"/>
+                                                                            </t>
+                                                                            <t t-else="ids.description == 'CGST'">
+                                                                                <t t-set="cgst" t-value="ids.amount"/>
+                                                                            </t>
+                                                                        </t>
+                                                                        <t t-set="tax" t-value="sgst+cgst"/>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <t t-set="tax" t-value="taxes.amount"/>
+                                                                    </t>
+                                                                </t>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <t t-set="tax" t-value="0"/>
+                                                            </t>
+                                                            <tr>
+                                                                <td style="text-align:left;">
+                                                                    <span>
+                                                                        <t t-esc="line.product_id.name"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        <t t-esc="line.product_uom_qty"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <span>
+                                                                        <t t-esc="line.price_total" t-options='{"widget": "monetary", "display_currency": line.order_id.currency_id, "precision": 2}'/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <span>
+                                                                        <t t-esc="line.qty_invoiced"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                    <t t-if="line.price_subtotal != 0">
+                                                                        <t t-set="unit_value"
+                                                                           t-value="line.price_subtotal / line.product_uom_qty"/>
+                                                                        <t t-set="inv_amount"
+                                                                           t-value="line.qty_invoiced * unit_value"/>
+                                                                        <t t-set="tax_inv_amount"
+                                                                           t-value="(tax/100)*inv_amount"/>
+                                                                        <span>
+                                                                            <t t-esc="inv_amount+tax_inv_amount" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id, "precision": 2}'/>
+                                                                        </span>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <t t-set="unit_value" t-value="0"/>
+                                                                        <t t-esc="unit_value" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id, "precision": 2}'/>
+
+                                                                    </t>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    <t t-set="due_qty"
+                                                                       t-value="line.product_uom_qty - line.qty_invoiced"/>
+
+                                                                    <span>
+                                                                        <t t-esc="due_qty"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td style="text-align:right;">
+                                                                     <t t-set="due_amount" t-value="due_qty * unit_value"/>
+<!--                                                                <t t-esc="due_amount"/>-->
+                                                                <t t-set="tax_due_amount" t-value="round((sgst/100)*due_amount,2)"/>
+                                                                <t t-set="tax_due_amount1" t-value="round((cgst/100)*due_amount,2)"/>
+
+                                                                <span>
+                                                                    <t t-esc="due_amount+tax_due_amount+tax_due_amount1" t-options='{"widget": "monetary", "display_currency": line.order_id.pricelist_id.currency_id, "precision": 2}'/>
+                                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                        <br/>
+                                                    </tbody>
+                                                </table>
+                                                <center><strong>________________________________________________________</strong></center>
+                                                <t t-set="total_receivables"
+                                                   t-value="total_receivables+sales.amount_unpaid"/>
+                                            </t>
+                                        </t>
+                                            <br/>
+                                            <table style="width: 30%; border-collapse: collapse;float:right">
+                                            <tr>
+                                                <td style="text-align: right; padding: 8px;">
+
+                                                <strong>
+                                                    <span>Total Receivable :
+                                                        <t t-esc="total_receivables"
+                                                          t-options='{"widget": "monetary", "display_currency": curr ,"precision": 2}'/>
+                                                    </span>
+                                                </strong>
+    <!--                                            <br/>-->
+                                                </td>
+                                            </tr>
+                                            </table>
+
+
+                                        <strong>____________________________________________________________________________________________________________________</strong>
+                                    </t>
+                                </t>
+                            </t>
+                            <div class="footer">
+                                <div class="text-center" style="border-top: 1px solid black; padding-top: 10px;font-size:14px;color: #666;font-weight:bold">
+                                    <span>
+                                        <t t-esc="company.phone"/>
+                                    </span>
+                                    <span style="margin-left: 20px;">
+                                        <t t-esc="company.email"/>
+                                    </span>
+                                    <span style="margin-left: 20px;">
+                                        <t t-esc="company.website"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </t>
+        </t>
+    </template>
+
+</odoo>

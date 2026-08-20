@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="view_inherit_pos_config_form" model="ir.ui.view">
+            <field name="name">view.inherit.pos.config.form</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//sheet" position="inside">
+                    <group name="rounding" string="Rounding">
+                        <group name="payments_left">
+                            <field name="rounding"/>
+                            <field name="rounding_type" required="rounding" invisible="not rounding"/>
+                            <field name="rounding_factor" required="rounding" invisible="not rounding"/>
+                            <field name="decimal_places" required="rounding" invisible="not rounding"/>
+                        </group>
+                        <group name="payments_right">
+                            <field name="rounding_automatic"/>
+                            <field name="rounding_automatic_type"
+                                   invisible="not rounding_automatic" required="rounding_automatic"/>
+                            <field name="rounding_automatic_factor"
+                                   invisible="not rounding_automatic or rounding_automatic_type not in ('rounding_up', 'rounding_down', 'rounding_up_down')"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

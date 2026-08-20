@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_consolidatedreport_format" model="report.paperformat">
+        <field name="name">Packing List</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">60</field>
+        <field name="margin_bottom">32</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">50</field>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="dpi">90</field>
+        <field name="default" eval="False"/>
+    </record>
+    <template id="report_consolidated_report_category">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="sale"
+                       t-value="request.env['sale.order'].sudo().search([('name','=',o.origin)], limit=1)"/>
+
+                    <div class="page" style="font-family: 'Arial', sans-serif; font-size: 13px;">
+                        <div class="header">
+                            <div style="width: 100%; display: inline-block; line-height: 1.5; color: #333;">
+                                <div style="float: left; width: 60%; margin-top: 10px;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                         style="max-height: 100px; width: auto;"/>
+                                </div>
+                                <div style="float: right; width: 40%; text-align: right; font-size: 13px;">
+                                    <t t-if="o.company_id.street">
+                                        <span t-field="o.company_id.street"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.company_id.street2">
+                                        <span t-field="o.company_id.street2"/>
+                                        <br/>
+                                    </t>
+                                    <span t-field="o.company_id.city"/>, Pin -
+                                    <span t-field="o.company_id.zip"/>
+                                    <br/>
+                                    <span t-field="o.company_id.state_id.name"/>,
+                                    <span t-field="o.company_id.country_id.name"/>
+                                    <br/>
+                                    <strong>GSTIN:</strong>
+                                    <span t-field="o.company_id.vat"/>
+                                    <br/>
+                                    <strong>PAN:</strong>
+                                    <span t-field="o.company_id.pan_no"/>
+                                </div>
+                            </div>
+                            <div style="clear: both; border-bottom: 1px solid #ccc; padding-top: 10px;"/>
+                        </div>
+
+                        <h4 style="text-align:center; margin-top: 20px; font-weight:bold; text-transform: uppercase;">
+                            CONSOLIDATED REPORT
+                        </h4>
+                        <div style="margin-top: 30px;">
+
+
+                            <table class="table table-bordered"
+                                   style="border: 2px solid black; width: 100%; border-collapse: collapse;">
+
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>SI.No</th>
+                                        <th>Particular</th>
+                                        <th>Barcode</th>
+                                        <th>Qty</th>
+                                        <th>Rate</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody>
+                                    <!-- totals -->
+                                    <t t-set="grand_total_qty" t-value="0.0"/>
+                                    <t t-set="grand_total_amount" t-value="0.0"/>
+                                    <t t-set="line_index" t-value="0"/>
+                                    <t t-set="products"
+                                       t-value="sorted(set(o.order_line.filtered(lambda l: not l.display_type).mapped('product_id')), key=lambda p: p.name)"/>
+                                    <t t-foreach="products" t-as="product">
+                                        <!-- FILTER LINES OF SAME PRODUCT -->
+                                        <t t-set="lines"
+                                           t-value="o.order_line.filtered(lambda l: l.product_id == product and not l.display_type)"/>
+                                        <!-- SUM VALUES -->
+                                        <t t-set="qty" t-value="sum(lines.mapped('product_uom_qty'))"/>
+                                        <!--                                        <t t-set="qty"-->
+                                        <!--                                           t-value="-->
+                                        <!--                                                  sum(-->
+                                        <!--                                                     l.secondary_qty if l.sell_in_unit-->
+                                        <!--                                                     else l.product_uom_qty-->
+                                        <!--                                                     for l in lines-->
+                                        <!--                                                  )-->
+                                        <!--                                               "/>-->
+                                        <t t-set="qty" t-value="sum(l.secondary_qty if l.use_sec_qty else l.product_uom_qty for l in lines)"/>
+                                        <!--                                        <t t-set="amount" t-value="sum(lines.mapped('price_subtotal'))"/>-->
+                                        <t t-set="untaxed_amount" t-value="sum(lines.mapped('price_total'))"/>
+                                        <t t-set="amount" t-value="sum(lines.mapped('price_subtotal'))"/>
+                                        <!--                                        <t t-set="rate" t-value="sum(lines.mapped('price_unit'))"/>-->
+                                        <!--                                        <t t-set="rate"-->
+                                        <!--                                           t-value="-->
+                                        <!--                                              (amount / qty)-->
+                                        <!--                                              if qty and any(l.use_sec_qty for l in lines)-->
+                                        <!--                                              else sum(lines.mapped('price_unit'))-->
+                                        <!--                                           "/>-->
+                                        <t t-set="rate" t-value="(amount / qty)if qty else 0"/>
+                                        <!-- totals -->
+                                        <t t-set="grand_total_qty" t-value="grand_total_qty + qty"/>
+                                        <t t-set="grand_total_amount" t-value="grand_total_amount + untaxed_amount"/>
+                                        <!-- index -->
+                                        <t t-set="line_index" t-value="line_index + 1"/>
+                                        <tr>
+                                            <td>
+                                                <t t-esc="line_index"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="product.name"/>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                <!--                                                <t t-esc="product.default_code"/>-->
+                                                <t t-esc="product.barcode or ''"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="'%.0f' % qty"/>
+                                            </td>
+                                            <td style="text-align:right; padding-right:5px;">
+                                                <span t-esc="rate"
+                                                      t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+                                            </td>
+                                            <td style="text-align:right; padding-right:5px;">
+                                                <span t-esc="amount"
+                                                      t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- TAX DETAILS -->
+                                    <t t-set="tax_summary" t-value="{}"/>
+                                    <t t-foreach="o.order_line" t-as="line">
+                                        <t t-foreach="line.tax_id" t-as="tax">
+                                            <!-- NORMAL TAX -->
+                                            <t t-if="tax.amount_type == 'percent'">
+                                                <t t-set="tax_name" t-value="tax.tax_group_id.name"/>
+
+                                                <t t-set="tax_amount"
+                                                   t-value="line.price_subtotal * tax.amount / 100"/>
+
+                                                <t t-if="tax_name in tax_summary">
+                                                    <t t-set="tax_update"
+                                                       t-value="tax_summary.update({
+                                                           tax_name: tax_summary[tax_name] + tax_amount
+                                                       })"/>
+                                                </t>
+
+                                                <t t-if="tax_name not in tax_summary">
+                                                    <t t-set="updated_tax"
+                                                       t-value="tax_summary.update({
+                                                           tax_name: tax_amount
+                                                       })"/>
+                                                </t>
+
+                                            </t>
+
+                                            <!-- GROUP TAX -->
+                                            <t t-if="tax.amount_type == 'group'">
+
+                                                <t t-foreach="tax.children_tax_ids" t-as="child_tax">
+
+                                                    <t t-set="child_tax_name"
+                                                       t-value="child_tax.tax_group_id.name"/>
+
+                                                    <t t-set="child_tax_amount"
+                                                       t-value="line.price_subtotal * child_tax.amount / 100"/>
+
+                                                    <t t-if="child_tax_name in tax_summary">
+                                                        <t t-set="dummy"
+                                                           t-value="tax_summary.update({
+                                                               child_tax_name:
+                                                               tax_summary[child_tax_name] + child_tax_amount
+                                                           })"/>
+                                                    </t>
+
+                                                    <t t-if="child_tax_name not in tax_summary">
+                                                        <t t-set="dummy"
+                                                           t-value="tax_summary.update({
+                                                               child_tax_name: child_tax_amount
+                                                           })"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+
+                                    <t t-foreach="tax_summary.items()" t-as="tax">
+                                        <tr>
+                                            <!-- Empty SI.No -->
+                                            <td colspan="3"></td>
+                                            <td></td>
+                                            <!-- GST NAME -->
+                                            <td style="text-align:right; font-weight:bold;"><t t-esc="tax[0]"/>:
+                                            </td>
+                                            <!-- GST AMOUNT -->
+                                            <td style="text-align:right; padding-right:5px;">
+                                                <span t-esc="tax[1]"
+                                                      t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- TOTAL -->
+                                    <tr style="font-weight:bold;">
+                                        <td colspan="3" style="text-align:right;"></td>
+                                        <td>
+                                            <t t-esc="'%.0f' % grand_total_qty"/>
+                                        </td>
+                                        <td></td>
+                                        <td style="text-align:right; padding-right:5px;">
+                                            <span t-esc="round(grand_total_amount)"
+                                                  t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="footer">
+                            <div style="border-top: 1px solid black; padding-top: 8px; text-align: center; font-size: 13px; color: #666; font-weight: bold;">
+                                <span t-field="o.company_id.phone"/>
+                                <span style="margin-left: 20px;">
+                                    <span t-field="o.company_id.email"/>
+                                </span>
+                                <span style="margin-left: 20px;">
+                                    <span t-field="o.company_id.website"/>
+                                </span>
+                                <div class="text-muted" style="font-size: 10px;">
+                                    Page:
+                                    <span class="page"/>
+                                    /
+                                    <span class="topage"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_consolidated_report" model="ir.actions.report">
+        <field name="name">Consolidated Report</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sales_report_product_image.report_consolidated_report_category</field>
+        <field name="report_file">sales_report_product_image.report_consolidated_report_category</field>
+        <field name="paperformat_id" ref="sales_report_product_image.report_consolidatedreport_format"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
+
+

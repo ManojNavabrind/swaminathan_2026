@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stock_picking_view_form" model="ir.ui.view">
+            <field name="name">stock.picking.form.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Packing List" invisible="picking_type_code in ['incoming','internal','dropship']">
+                       <group>
+                           <group>
+<!--                               <field name="invoice_no" widget="many2many_tags"/>-->
+
+                               <field name="expoter_ref"/>
+                               <field name="buyer_order_no"/>
+                               <field name="pre_carraige"/>
+                               <field name="flight_no"/>
+                               <field name="port_of_discharge"/>
+                               <field name="country_of_origin"/>
+                               <field name="marks_no"/>
+                               <field name="no_pkgs"/>
+<!--                               <field name="other_ref"/>-->
+
+                           </group>
+                           <group col="2">
+                               <field name="iec_no"/>
+                               <field name="buyer_date"/>
+                               <field name="place_of_receipt"/>
+                               <field name="port_of_loading"/>
+                               <field name="place_of_discharge"/>
+                               <field name="country_of_dest"/>
+                               <field name="container_no"/>
+                               <field name="pkgs_kind"/>
+                               <field name="total_gross" invisible="1"/>
+
+
+
+                            </group>
+                        </group>
+
+                    </page>
+                </xpath>
+            </field>
+        </record>
+<!--        <record id="account_move_view_form" model="ir.ui.view">-->
+<!--            <field name="name">account.move.form.view</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="inherit_id" ref="account.view_move_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//tree/field[@name='quantity']" position="after">-->
+<!--                    <field name="gross_weight"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+    </data>
+</odoo>

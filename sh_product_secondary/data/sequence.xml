@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="ir_seq_product_barcode" model="ir.sequence">
+            <field name="name">Product Barcode</field>
+            <field name="code">product.barcode</field>
+            <field name="number_next">16295</field>
+            <field name="prefix"> </field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
+
+
+
+
+
+
+
+
+

@@ -1,2 +1,1 @@
-# swaminathan_2026
-Swaminathan @ Co
+# swaminathan-odoo-oct24

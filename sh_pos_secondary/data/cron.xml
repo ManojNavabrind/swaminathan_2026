@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <odoo>
+        <data>
+            <record id="sequence_fims_rom" model="ir.sequence">
+                <field name="name">POS Number</field>
+                <field name="code">pos.bill.number</field>
+                <field eval="5" name="padding"/>
+                <field name="prefix">POS/</field>
+            </record>
+        </data>
+    </odoo>

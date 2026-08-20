@@ -1,0 +1,25 @@
+{
+    'name': 'Packing List Print',
+    'description': 'Packing List Print',
+    'summary': 'Packing List Print',
+    'category': 'Inventory',
+    'version': '17.0',
+    'author': 'Navabrind IT Solutions',
+    'company': 'Navabrind IT Solutions',
+    'maintainer': 'Navabrind IT Solutions',
+    'website': "",
+    'depends': ['sale', 'stock'],
+    'data': [
+        'report/customer_report.xml',
+        'report/customs_report.xml',
+        'report/report.xml',
+        'views/views.xml',
+        'views/stock_move_add_page.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'assets': {
+    },
+    'license': 'LGPL-3',
+}

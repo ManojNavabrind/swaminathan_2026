@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="sh_pos_secondary.ChangeUOMButton">
+        <button class="control-button btn btn-light rounded-0 fw-bolder" t-on-click="() => this.onClickUOM()">
+            <span></span>
+            <span>Change UOM</span>
+        </button>
+    </t>
+   <t t-name="sh_pos_secondary.UpdateQty" owl="1">
+       <button class="control-button btn btn-light rounded-0 fw-bolder" t-on-click="() => this.click()">
+           <i role="img" aria-label="Custom Button" title="Custom Button"/>
+                  Update Quantity
+       </button>
+   </t>
+
+</templates>

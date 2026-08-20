@@ -1,0 +1,55 @@
+<odoo>
+    <record id="view_price_evaluation_form" model="ir.ui.view">
+        <field name="name">price.evaluation.form</field>
+        <field name="model">price.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Price Evaluation">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="categ_ids" widget="many2many_tags" />
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="percentage"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="product_variants" string="Available Products">
+                            <field name="product_variant_ids">
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_price_evaluation_tree" model="ir.ui.view">
+        <field name="name">price.evaluation.tree</field>
+        <field name="model">price.evaluation</field>
+        <field name="arch" type="xml">
+            <tree string="Price Evaluations">
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="percentage"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Action -->
+    <record id="action_price_evaluation" model="ir.actions.act_window">
+        <field name="name">Price Evaluations</field>
+        <field name="res_model">price.evaluation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>Create and manage product price evaluations here.</p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_price_evaluation" name="Price Evaluation Rules"
+              parent="sale.menu_sales_config"
+              action="action_price_evaluation" sequence="1"/>
+
+</odoo>

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    5041
+    5041
+    <template id="report_producttemplatelabel5x6">
+        <t t-call="web.html_container">
+            <style>
+                            html, body {
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+
+                            .page {
+                                page-break-inside: avoid !important;
+                                break-inside: avoid !important;
+                            }
+
+                            table, tr, td {
+                                page-break-inside: avoid !important;
+                                break-inside: avoid !important;
+                            }
+            </style>
+            <t t-foreach="label_pages" t-as="label_page">
+                <div
+                    t-attf-style="width:120mm;
+                    height:19.5mm;
+                    margin:0;
+                    padding:0;
+                    overflow:hidden;#{'' if label_page_last else 'page-break-after:always;'}">
+                    <table style="width:108mm;border-collapse:collapse;table-layout:fixed;box-sizing:border-box;">
+                        <colgroup>
+                            <col style="width:21.6mm;"/>
+                            <col style="width:21.6mm;"/>
+                            <col style="width:21.6mm;"/>
+                            <col style="width:21.6mm;"/>
+                            <col style="width:21.6mm;"/>
+                        </colgroup>
+                        <tr>
+                            <t t-foreach="range(5)" t-as="col_idx">
+                                <t t-if="col_idx &lt; len(label_page)">
+                                    <t t-set="product" t-value="label_page[col_idx][0]"/>
+                                    <t t-set="barcode" t-value="label_page[col_idx][1]"/>
+                                        <td style="width:21.6mm;height:20mm;vertical-align:top;padding:2mm 0 0 0;border:none;text-align:center;">
+                                            <t t-if="barcode">
+                                                <div t-out="barcode"
+                                                     t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'width:25mm;height:7mm;display:block;'}"/>
+                                                <div style="position:relative;left:7.5px;">
+                                                <div style="font-size:9px;font-weight:700;line-height:1.5;margin-top:1.5mm;" t-out="barcode"/>
+                                                <div style="font-size:8px;font-weight:700;" t-field="product.default_code"/>
+                                                </div>
+                                            </t>
+                                        </td>
+<!--                                    <td style="width:21.6mm;height:20mm;vertical-align:top;padding:2mm 0 0 0;box-sizing:border-box;border:none;">-->
+<!--                                        <t t-if="barcode">-->
+<!--                                            <div t-out="barcode"-->
+<!--                                                 t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'width:25mm;height:7mm;align-content:center !important;'}"/>-->
+<!--                                            <div style="font-size:9px;font-weight:700;line-height:1.5;margin-top:1.5mm;text-align:center;" t-out="barcode"/>-->
+<!--                                            <div style="font-size:8px;font-weight:700;text-align:center;" t-field="product.default_code"/>-->
+<!--                                        </t>-->
+<!--                                    </td>-->
+                                    </t>
+
+                                <t t-else="">
+                                    <td style="width:21.6mm;height:20mm;padding:0;box-sizing:border-box;border:none;"/>
+                                </t>
+                            </t>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+<record id="paperformat_5_12_scrap_reports" model="report.paperformat">
+    <field name="name">Barcode Label Paper Format</field>
+    <field name="default" eval="True"/>
+    <field name="format">custom</field>
+    <field name="page_height">21</field>
+    <field name="page_width">120</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">0</field>
+    <field name="margin_bottom">0</field>
+    <field name="margin_left">0</field>
+    <field name="margin_right">0</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">0</field>
+    <field name="dpi">90</field>
+    <field name="disable_shrinking" eval="True"/>
+</record>
+<record id="report_product_template_label_5x6_noprice" model="ir.actions.report">
+    <field name="name">Product Label 5x6 (PDF)</field>
+    <field name="model">product.template</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">barcode_label.report_producttemplatelabel5x6</field>
+    <field name="report_file">barcode_label.report_producttemplatelabel5x6</field>
+    <field name="paperformat_id" ref="barcode_label.paperformat_5_12_scrap_reports"/>
+    <field name="print_report_name">'Products Labels - %s' % (object.name)</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+</odoo>
+<!--======>>>>>-->
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<odoo>-->
+<!--    <template id="report_producttemplatelabel5x6">-->
+<!--        <t t-call="web.html_container">-->
+<!--            <t t-foreach="label_pages" t-as="label_page">-->
+<!--                <div-->
+<!--                    t-attf-style="width:120mm;-->
+<!--                    height:19.5mm;-->
+<!--                    margin:0;-->
+<!--                    padding:0;-->
+<!--                    overflow:hidden;#{'' if label_page_last else 'page-break-after:always;'}">-->
+<!--                    <table style="width:108mm;border-collapse:collapse;table-layout:fixed;box-sizing:border-box;">-->
+<!--                        <tr>-->
+<!--                            <t t-foreach="label_page" t-as="label_item">-->
+<!--                                <t t-set="product" t-value="label_item[0]"/>-->
+<!--                                <t t-set="barcode" t-value="label_item[1]"/>-->
+<!--                                <td style="width:21mm;height:20mm;vertical-align:top;padding:2mm 0 0 0;box-sizing:border-box;border:none;">-->
+<!--                                    <t t-if="barcode">-->
+<!--                                        <div t-out="barcode"-->
+<!--                                             t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'width:25mm;height:7mm;'}"/>-->
+<!--                                        <div style="font-size:9px;font-weight:700;line-height:1.5;margin-top:1.5mm;margin-left:35px;" t-out="barcode"/>-->
+<!--                                    <div style="font-size:8px;font-weight:700;margin-left:29px;" t-field="product.default_code"/>-->
+
+<!--                                    </t>-->
+<!--                                </td>-->
+<!--                            </t>-->
+<!--                        </tr>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--        </t>-->
+<!--    </template>-->
+
+<!--    <record id="paperformat_5_12_scrap_reports" model="report.paperformat">-->
+<!--        <field name="name">Barcode Label Paper Format</field>-->
+<!--        <field name="default" eval="True"/>-->
+<!--        <field name="format">custom</field>-->
+<!--        <field name="page_height">21</field>-->
+<!--        <field name="page_width">120</field>-->
+<!--        <field name="orientation">Portrait</field>-->
+<!--        <field name="margin_top">0</field>-->
+<!--        <field name="margin_bottom">0</field>-->
+<!--        <field name="margin_left">0</field>-->
+<!--        <field name="margin_right">0</field>-->
+<!--        <field name="header_line" eval="False"/>-->
+<!--        <field name="header_spacing">0</field>-->
+<!--        <field name="dpi">90</field>-->
+<!--        <field name="disable_shrinking" eval="True"/>-->
+<!--    </record>-->
+
+<!--    <record id="report_product_template_label_5x6_noprice" model="ir.actions.report">-->
+<!--        <field name="name">Product Label 5x6 (PDF)</field>-->
+<!--        <field name="model">product.template</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--        <field name="report_file">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--        <field name="paperformat_id" ref="barcode_label.paperformat_5_12_scrap_reports"/>-->
+<!--        <field name="print_report_name">'Products Labels - %s' % (object.name)</field>-->
+<!--        <field name="binding_model_id" eval="False"/>-->
+<!--        <field name="binding_type">report</field>-->
+<!--    </record>-->
+
+<!--</odoo>-->
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<odoo>-->
+<!--    <template id="report_producttemplatelabel5x6">-->
+<!--    <t t-call="web.html_container">-->
+<!--        <t t-foreach="label_pages" t-as="label_page">-->
+<!--            <style>-->
+<!--    div:last-child {-->
+<!--        page-break-after: auto !important;-->
+<!--    }-->
+<!--</style>-->
+<!--            <div-->
+<!--     style="width:120mm;-->
+<!--            height:19.5mm;-->
+<!--            margin:0;-->
+<!--            padding:0;-->
+<!--            overflow:hidden;-->
+<!--            page-break-after:always;">-->
+<!--&lt;!&ndash;            <div class="page"&ndash;&gt;-->
+<!--&lt;!&ndash;                 t-attf-style="width:108mm;height:20mm;margin:0;padding:0 !important;overflow:hidden;box-sizing:border-box;#{'' if label_page_last else 'page-break-after:always;'}">&ndash;&gt;-->
+<!--                <table style="width:108mm;border-collapse:collapse;table-layout:fixed;box-sizing:border-box;">-->
+<!--                    <tr>-->
+<!--                        <t t-foreach="label_page" t-as="label_item">-->
+<!--                            <t t-set="product" t-value="label_item[0]"/>-->
+<!--                            <t t-set="barcode" t-value="label_item[1]"/>-->
+<!--                            <td style="width:21.6mm;height:15mm;text-align:center;vertical-align:top;padding:2mm 0 0 0;box-sizing:border-box;border:none;">-->
+<!--                                <t t-if="barcode">-->
+<!--                                    <div t-out="barcode"-->
+<!--                                         t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'width:19mm;height:9mm;'}"/>-->
+<!--                                    <div style="font-size:7px;font-weight:700;line-height:1.2;margin-top:0.5mm;" t-out="barcode"/>-->
+<!--                                </t>-->
+<!--                                <div style="font-size:6px;font-weight:700;" t-field="product.default_code"/>-->
+<!--                            </td>-->
+<!--                        </t>-->
+<!--                    </tr>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--        </t>-->
+<!--    </t>-->
+<!--</template>-->
+
+<!--&lt;!&ndash;    <template id="report_producttemplatelabel5x6">&ndash;&gt;-->
+<!--&lt;!&ndash;        <t t-call="web.basic_layout">&ndash;&gt;-->
+<!--&lt;!&ndash;            <t t-foreach="label_pages" t-as="label_page">&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="page" style="width:108mm;height:20mm;margin:0;padding:0;overflow:hidden;">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <table style="width:108mm;border-collapse:collapse;table-layout:fixed;">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <t t-foreach="label_page" t-as="label_item">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <t t-set="product" t-value="label_item[0]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <t t-set="barcode" t-value="label_item[1]"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <td style="width:21.6mm;height:20mm;text-align:center;vertical-align:top;padding:1mm 0 0 0;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <t t-if="barcode">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <div t-out="barcode"&ndash;&gt;-->
+<!--&lt;!&ndash;                                             t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': 'width:19mm;height:9mm;'}"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <div style="font-size:7px;font-weight:700;line-height:1.2;margin-top:0.5mm;" t-out="barcode"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </t>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <div style="font-size:6px;font-weight:700;line-height:1.2;margin-top:0.5mm;" t-field="product.default_code"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </t>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </table>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </t>&ndash;&gt;-->
+<!--&lt;!&ndash;        </t>&ndash;&gt;-->
+<!--&lt;!&ndash;    </template>&ndash;&gt;-->
+
+<!--    <record id="paperformat_5_12_scrap_reports" model="report.paperformat">-->
+<!--        <field name="name">Barcode Label Paper Format</field>-->
+<!--        <field name="default" eval="True"/>-->
+<!--        <field name="format">custom</field>-->
+<!--        <field name="page_height">21</field>-->
+<!--        <field name="page_width">120</field>-->
+<!--        <field name="orientation">Portrait</field>-->
+<!--        <field name="margin_top">0</field>-->
+<!--        <field name="margin_bottom">0</field>-->
+<!--        <field name="margin_left">0</field>-->
+<!--        <field name="margin_right">0</field>-->
+<!--        <field name="header_line" eval="False"/>-->
+<!--        <field name="header_spacing">0</field>-->
+<!--        <field name="dpi">90</field>-->
+<!--        <field name="disable_shrinking" eval="True"/>-->
+<!--    </record>-->
+
+<!--    <record id="report_product_template_label_5x6_noprice" model="ir.actions.report">-->
+<!--        <field name="name">Product Label 5x6 (PDF)</field>-->
+<!--        <field name="model">product.template</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--        <field name="report_file">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--        <field name="paperformat_id" ref="barcode_label.paperformat_5_12_scrap_reports"/>-->
+<!--        <field name="print_report_name">'Products Labels - %s' % (object.name)</field>-->
+<!--        <field name="binding_model_id" eval="False"/>-->
+<!--        <field name="binding_type">report</field>-->
+<!--    </record>-->
+
+<!--</odoo>-->
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<odoo>-->
+<!--    <template id="report_producttemplatelabel5x6">-->
+<!--    <t t-call="web.basic_layout">-->
+<!--        <div class="page">-->
+<!--            <t t-set="columns" t-value="5"/>-->
+<!--            <t t-set="rows" t-value="1"/>-->
+<!--            <t t-set="price_included" t-value="True"/>-->
+<!--            <t t-call="product.report_productlabel"/>-->
+<!--        </div>-->
+<!--    </t>-->
+<!--</template>-->
+
+<!--    <record id="paperformat_5_12_scrap_reports" model="report.paperformat">-->
+<!--    <field name="name">Barcode Label Paper Format</field>-->
+<!--    <field name="default" eval="True"/>-->
+<!--    <field name="format">custom</field>-->
+<!--    <field name="page_height">20</field>-->
+<!--    <field name="page_width">108</field>-->
+<!--    <field name="orientation">Portrait</field>-->
+<!--    <field name="margin_top">0</field>-->
+<!--    <field name="margin_bottom">0</field>-->
+<!--    <field name="margin_left">0</field>-->
+<!--    <field name="margin_right">0</field>-->
+<!--    <field name="header_line" eval="False"/>-->
+<!--    <field name="header_spacing">0</field>-->
+<!--    <field name="dpi">90</field>-->
+<!--    <field name="disable_shrinking" eval="True"/>-->
+<!--</record>-->
+
+<!--    <record id="report_product_template_label_5x6_noprice" model="ir.actions.report">-->
+<!--            <field name="name">Product Label 5x6 (PDF)</field>-->
+<!--            <field name="model">product.template</field>-->
+<!--            <field name="report_type">qweb-pdf</field>-->
+<!--            <field name="report_name">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--            <field name="report_file">barcode_label.report_producttemplatelabel5x6</field>-->
+<!--            <field name="paperformat_id" ref="barcode_label.paperformat_5_12_scrap_reports"/>-->
+<!--            <field name="print_report_name">'Products Labels - %s' % (object.name)</field>-->
+<!--            <field name="binding_model_id" eval="False"/>-->
+<!--            <field name="binding_type">report</field>-->
+<!--    </record>-->
+
+
+<!--    <template id="report_simple_label5x6_no_price">-->
+<!--         <t t-set="barcode_size" t-value="'width:21mm;height:8mm'"/>-->
+<!--        <t t-set="table_style" t-value="'padding-top:2px;width:20mm;height:20mm;' + table_style"/>-->
+<!--        <t t-if="barcode">-->
+<!--            <td t-att-style="make_invisible and 'visibility:hidden;padding-bottom:3mm;' or 'padding-bottom:3mm;'">-->
+<!--                <div class="" t-att-style="table_style">-->
+<!--                    <div class="">-->
+
+<!--                        <div t-out="barcode" style="padding:0px" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>-->
+<!--                        <div t-out="barcode" style="font-size:8px;font-weight:900;padding-left:15px;padding-top:4px;"/>-->
+
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <span style="font-size:6px;font-weight:900;padding-left:10px;padding-top:2px;" t-field="product.default_code"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </td>-->
+<!--        </t>-->
+<!--    </template>-->
+
+<!--    &lt;!&ndash;    </template>&ndash;&gt;-->
+
+
+<!--    <template id="report_productlabel_5x6_inherit"-->
+<!--              inherit_id="product.report_productlabel">-->
+
+<!--        <xpath expr="//t[@t-if='columns == 4 and rows == 12']"-->
+<!--               position="after">-->
+
+<!--            <t t-if="columns == 5 and rows == 1">-->
+<!--                <t t-set="padding_page" t-value="'padding: 10mm 10mm 5mm 0mm'"/>-->
+<!--                <t t-set="report_to_call" t-value="'5x6'"/>-->
+<!--            </t>-->
+
+<!--        </xpath>-->
+
+<!--    </template>-->
+<!--    <template id="report_productlabel_5x6_call"-->
+<!--              inherit_id="product.report_productlabel">-->
+
+<!--        <xpath expr="//t[@t-elif=&quot;report_to_call == '4x12'&quot;]"-->
+<!--               position="after">-->
+
+<!--            <t t-elif="report_to_call == '5x6'">-->
+<!--                <t t-call="barcode_label.report_simple_label5x6_no_price"/>-->
+<!--            </t>-->
+
+<!--        </xpath>-->
+
+<!--    </template>-->
+<!--</odoo>-->
+
+<!--&lt;!&ndash;<?xml version="1.0" encoding="utf-8"?>&ndash;&gt;-->
+<!--&lt;!&ndash;<odoo>&ndash;&gt;-->
+<!--&lt;!&ndash;    <template id="report_producttemplatelabel5x6">&ndash;&gt;-->
+<!--&lt;!&ndash;        <t t-call="web.basic_layout">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="page">&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-set="columns" t-value="5"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-set="rows" t-value="6"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-set="price_included" t-value="True"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-call="product.report_productlabel"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </t>&ndash;&gt;-->
+<!--&lt;!&ndash;    </template>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <record id="paperformat_5_6_scrap_reports" model="report.paperformat">&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="name">Barcode Label Paper Format</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="default" eval="True"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="format">custom</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="page_height">297</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="page_width">210</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="orientation">Portrait</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="margin_top">20.00</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="margin_bottom">32.00</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="margin_left">14</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="margin_right">14</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="header_line" eval="False"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="header_spacing">35</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="dpi">120</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="disable_shrinking" eval="True"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </record>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <record id="report_product_template_label_5x6_noprice" model="ir.actions.report">&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="name">Product Label 5x6 (PDF)</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="model">product.template</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="report_type">qweb-pdf</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="report_name">barcode_label.report_producttemplatelabel5x6</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="report_file">barcode_label.report_producttemplatelabel5x6</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="paperformat_id" ref="barcode_label.paperformat_5_6_scrap_reports"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="print_report_name">'Products Labels - %s' % (object.name)</field>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="binding_model_id" eval="False"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <field name="binding_type">report</field>&ndash;&gt;-->
+<!--&lt;!&ndash;    </record>&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;    <template id="report_simple_label5x6_no_price">&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <t t-set="barcode_size" t-value="'width:40mm;height:17mm'"/>&ndash;&gt;-->
+<!--&lt;!&ndash;<td t-att-style="make_invisible and 'visibility:hidden;'" style="padding:4mm 3mm;vertical-align:middle;">&ndash;&gt;-->
+<!--&lt;!&ndash;    <div style="text-align:center;padding:0;margin:0;"><br/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <span style="font-size:14px;font-weight:900;display:block;text-align:center;white-space:nowrap;" t-field="product.default_code"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    <div style="text-align:center;padding:0;margin:0;">&ndash;&gt;-->
+<!--&lt;!&ndash;        <t t-if="barcode">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div t-out="barcode" style="padding:0;margin:0;" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <span style="font-size:13px;font-weight:900;display:block;text-align:center;padding:0;margin:0;" t-out="barcode"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        </t>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;    <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;    <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;</td>&ndash;&gt;-->
+
+
+
+
+
+
+<!--&lt;!&ndash;</odoo>&ndash;&gt;-->

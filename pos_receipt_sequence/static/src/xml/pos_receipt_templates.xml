@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+   <t t-name="pos_receipt_sequence"
+      t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="replace">
+           <div class="pos-receipt-center-align">
+                <strong style="color:red;">Receipt Sequence: <t t-esc="props.data.receipt_sequence"/>
+                </strong>
+            </div>
+       </xpath>
+   </t>
+</templates>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="sale_order_line_form_view_inherit2" model="ir.ui.view">
+        <field name="name">sale.order.line.form.inherit.secondary.uom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Locate the tree view inside the order lines -->
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="secondary_qty"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

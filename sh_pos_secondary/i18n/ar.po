@@ -1,0 +1,106 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_pos_secondary
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.1alpha1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-25 11:51+0000\n"
+"PO-Revision-Date: 2021-09-25 11:51+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_pos_secondary
+#. openerp-web
+#: code:addons/sh_pos_secondary/static/src/xml/pos.xml:0
+#, python-format
+msgid "Change UOM"
+msgstr "تغيير UOM."
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields,field_description:sh_pos_secondary.field_pos_config__display_uom_in_receipt
+msgid "Display UOM in Receipt"
+msgstr "عرض UOM في إيصال"
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields,field_description:sh_pos_secondary.field_pos_config__enable_price_to_display
+msgid "Display price in Secondary UOM ?"
+msgstr "عرض الأسعار في UOM الثانوية؟"
+
+#. module: sh_pos_secondary
+#: model:ir.model,name:sh_pos_secondary.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "نقطة بيع التكوين"
+
+#. module: sh_pos_secondary
+#: model:ir.model,name:sh_pos_secondary.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "نقطة بيع خطوط الطلب"
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields.selection,name:sh_pos_secondary.selection__pos_config__select_uom_type__primary
+msgid "Primary"
+msgstr "ابتدائي"
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields.selection,name:sh_pos_secondary.selection__pos_config__select_uom_type__secondary
+msgid "Secondary"
+msgstr "ثانوي"
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields,field_description:sh_pos_secondary.field_pos_order_line__secondary_qty
+msgid "Secondary Qty"
+msgstr "الكمية الثانوية"
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields,field_description:sh_pos_secondary.field_pos_order_line__secondary_uom_id
+msgid "Secondary UOM"
+msgstr "الثانوية UOM."
+
+#. module: sh_pos_secondary
+#: model_terms:ir.ui.view,arch_db:sh_pos_secondary.pos_order_inherit_form_view
+msgid "Secondary UoM"
+msgstr "الثانوية UOM."
+
+#. module: sh_pos_secondary
+#: model:ir.model.fields,field_description:sh_pos_secondary.field_pos_config__select_uom_type
+msgid "Select Default UOM type"
+msgstr "حدد نوع UOM الافتراضي"
+
+#. module: sh_pos_secondary
+#. openerp-web
+#: code:addons/sh_pos_secondary/static/src/js/pos.js:0
+#, python-format
+msgid "Select the UOM"
+msgstr "حدد UOM."
+
+#. module: sh_pos_secondary
+#: model_terms:ir.ui.view,arch_db:sh_pos_secondary.sh_pos_secondary_pos_details
+msgid "UOM Settings"
+msgstr "إعدادات UOM"
+
+#. module: sh_pos_secondary
+#. openerp-web
+#: code:addons/sh_pos_secondary/static/src/xml/pos.xml:0
+#, python-format
+msgid "With a"
+msgstr "مع"
+
+#. module: sh_pos_secondary
+#. openerp-web
+#: code:addons/sh_pos_secondary/static/src/xml/pos.xml:0
+#, python-format
+msgid "at"
+msgstr "في"
+
+#. module: sh_pos_secondary
+#. openerp-web
+#: code:addons/sh_pos_secondary/static/src/xml/pos.xml:0
+#, python-format
+msgid "discount"
+msgstr "خصم"

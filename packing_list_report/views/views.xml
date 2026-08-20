@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stock_move_form_extended_view" model="ir.ui.view">
+            <field name="name">stock.move.tree.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='product_id']" position="after">
+
+                            <field name="net_weight" column_invisible="1"/>
+                            <field name="gross_weight" column_invisible="1"/>
+                            <field name="no_pcs" column_invisible="1"/>
+
+                    </xpath>
+                </field>
+        </record>
+	<record id="view_stock_move_line_operation_tree_extended_view" model="ir.ui.view">
+                <field name="name">stock.move.line.view</field>
+                <field name="model">stock.move.line</field>
+                <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+                <field name="arch" type="xml">
+                    <xpath expr="//tree" position="inside">
+                        <field name="no_pcs" column_invisible="1"/>
+                        <field name="net_weight" column_invisible="1"/>
+                    </xpath>
+            </field>
+        </record>
+
+        <record id="stock_quant_package_extended_view" model="ir.ui.view">
+            <field name="name">stock.quant.package.form.view</field>
+            <field name="model">stock.quant.package</field>
+            <field name="inherit_id" ref="stock.view_quant_package_form"/>
+                <field name="arch" type="xml">
+                    <xpath expr="//field[@name='package_type_id']" position="after">
+
+                            <field name="net_weight"/>
+                            <field name="gross_weight"/>
+                    </xpath>
+                </field>
+            </record>
+
+    </data>
+</odoo>

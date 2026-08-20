@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_receipt_reprint" model="report.paperformat">
+        <field name="name">Receipt Reprint</field>
+        <field name="default" eval="True"/>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="format">custom</field>
+        <field name="page_width">210</field>
+        <field name="page_height">297</field>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="reprint_template" model="ir.actions.report">
+        <field name="name">Reprint Receipt</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">swaminathan_reprint_receipt.reprint_receipt_template</field>
+        <field name="report_file">swaminathan_reprint_receipt.reprint_receipt_template</field>
+        <field name="paperformat_id" ref="swaminathan_reprint_receipt.paperformat_receipt_reprint"/>
+    </record>
+
+    <record id="pos_receipt_reprint" model="ir.ui.view">
+        <field name="name">POS RECEIPT</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/header/button[@name='refund']" position="after">
+                <button name="%(swaminathan_reprint_receipt.reprint_template)d" string="Reprint Receipt"
+                        type="action" class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_res_company_form_" model="ir.ui.view">
+        <field name="name">res.company.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form//sheet//notebook//page//field[@name='parent_id']" position="before">
+                <field name="report_header"/>
+                <field name="report_title" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pos_receipt_reprint" model="ir.ui.view">
+        <field name="name">POS RECEIPT</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/header/button[@name='refund']" position="after">
+                <button
+                        name="%(swaminathan_reprint_receipt.reprint_template)d"
+                        string="Reprint Receipt"
+                        type="action"
+                        class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
+

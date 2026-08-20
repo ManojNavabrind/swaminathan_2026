@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ReceiptHeader" t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+             <xpath expr="//img[@class='pos-receipt-logo']" position="replace">
+             </xpath>
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="replace">
+                <div style="text-align:center;font-family: Arial, sans-serif;">
+                    <span style="font-size:22px;">
+                        <t t-esc="props.data.company.name"/>
+                    </span>
+                    <br/>
+                    <span style="font-size:12px;">
+                        <t t-esc="props.data.company.street"/>,
+                    </span>
+                    <span style="font-size:12px;">
+                        <t t-esc="props.data.company.city"/>,
+                    </span>
+                    <span style="font-size:12px;">
+                         <t t-esc="props.data.company.zip"/>
+                    </span>
+
+                    <br/>
+                    <span style="font-size:12px;">ph:<t t-esc="props.data.company.phone"/></span>,
+                    <span style="font-size:12px;"><t t-esc="props.data.company.phone2"/></span>,
+                    <span style="font-size:12px;"><t t-esc="props.data.company.phone3"/></span>
+<!--                    <span style="font-size:12px;">Ph: 0435-2432260,2421475,2432226</span>-->
+                    <br/>
+                    <span style="font-size:12px;">GSTIN:<t t-esc="props.data.company.vat"/></span>
+<!--                    <span style="font-size:12px;">GSTIN: 33AAMFS4132K1Z3</span>-->
+                    <br/>
+                    <br/>
+                </div>
+
+            <div class="pos-receipt-contact">
+               <div style="display: flex; justify-content: space-between; align-items: flex-start;padding-right:10px;">
+
+    <!-- Left side for the logo -->
+                   <div style="flex: 0 0 auto; padding-right: 20px;">
+        <img t-attf-src="/web/image?model=res.company&amp;id={{props.data.company.id}}&amp;field=logo"
+             style=" margin-top:-90%; width: 110px; height: auto;" alt="Logo" class="pos-receipt-logo"/>
+    </div>
+
+                   <!-- Right side for the company address -->
+                   <!--    <div style="flex: 1; text-align: right;color:#817E7E;">-->
+                   <!--        <div t-if="props.data.company.partner_id?.[1]" t-esc="props.data.company.partner_id[1]" />-->
+                   <!--        <t t-if="props.data.company.street">-->
+                   <!--            <div><t t-esc="props.data.company.street" /></div>-->
+                   <!--        </t>-->
+                   <!--        <t t-if="props.data.company.street2">-->
+                   <!--            <div><t t-esc="props.data.company.street2" /></div>-->
+                   <!--        </t>-->
+                   <!--        <t t-if="props.data.company.country">-->
+                   <!--            <div><t t-esc="props.data.company.state_id[1]" />, <t t-esc="props.data.company.country.name" /></div>-->
+                   <!--        </t>-->
+                   <!--        <t t-if="props.data.company.vat">-->
+                   <!--            <div><t t-esc="props.data.company.country?.vat_label || 'GSTIN'"/>: <t t-esc="props.data.company.vat" /></div>-->
+                   <!--        </t>-->
+                   <!--        <div>PAN No: <t t-esc="props.data.company.pan_no" /><t t-esc="props.data.company.pan" /></div>-->
+
+                   <!--        <div t-if="props.data.header" style="white-space: pre-line" t-esc="props.data.header" />-->
+                   <!--        <div t-if="props.data.cashier" class="cashier">-->
+                   <!--            <div>&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</div>-->
+                   <!--            <div>Served by <t t-esc="props.data.cashier" /></div>-->
+                   <!--        </div>-->
+
+                   <!--        <div class="" t-if="props.data.trackingNumber and !props.data.bigTrackingNumber">-->
+                   <!--            <span>Order No </span> <span class="fs-7" t-esc="props.data.trackingNumber" />-->
+                   <!--        </div>-->
+                   <!--    </div>-->
+               </div>
+                <div style="border-top: 1px solid #DEDBDA; color:#DEDBDA; margin-top: 5px;"/>
+                <br/>
+                <div>
+                    <t t-if="props.data.bill_type">
+                        <b>
+                            <span style="color:#817E7E;font-size:18px;">
+                                <t t-esc="props.data.bill_type"/>
+                            </span>
+                        </b>
+                    </t>
+                    <t t-else="">
+                        <b>
+                            <span style="color:#817E7E;font-size:18px;">
+                                CASH BILL
+                            </span>
+                        </b>
+                    </t>
+
+<!--                    <b><span style="color:#817E7E;font-size:18px;">CASH BILL</span></b>-->
+                    <br/>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+
+                    <div style="width:70%;font-size:14px ; text-align:left">
+                        <div t-if="props.data.partner">CUSTOMER NAME:<br/>
+                            <t t-esc='props.data.partner.name' style="color:#817E7E;"/>
+
+                            <t t-if="props.data.partner.street">
+                                <div><t t-esc="props.data.partner.street" /></div>
+                            </t>
+                            <t t-if="props.data.partner.Street2">
+                                <div><t t-esc="props.data.partner.Street2" /></div>
+                            </t>
+                            <t t-if="props.data.partner.city">
+                                <div><t t-esc="props.data.partner.city" /></div>
+                            </t>
+                            <t t-if="props.data.partner.state_id">
+                                <div><t t-esc="props.data.partner.state_id.name" /></div>
+                            </t>
+                            <t t-if="props.data.partner.zip">
+                                <div><t t-esc="props.data.partner.zip" /></div>
+                            </t>
+                            <t t-if="props.data.partner.country_id">
+                                <div><t t-esc="props.data.partner.country_id.name" /></div>
+                            </t>
+        </div>
+                        <!--                        <br/>-->
+                        <!--                   <div t-if="props.data.name">Bill No:<br/>-->
+                        <!--            <t t-esc='props.data.name' style="color:#817E7E;"/>-->
+                        <!--        </div>-->
+    </div>
+
+                        <div style="flex: 1; font-size:14px ;text-align: left;">
+        <!-- Right Column -->
+          <div t-if="props.data.partner and props.data.partner.phone">PHONE :
+    <t t-esc="props.data.partner.phone" style="color:#817E7E;"/>
+</div>
+
+
+                            <br/>
+                            <div t-if="props.data.date">DATE:
+            <t t-esc='props.data.date' style="color:#817E7E;"/>
+        </div>
+                            <br/>
+                            <div t-if="props.data.receipt_sequence">BILL NO :
+<!--            <t t-esc='props.data.name.replace("Order","")' style="color:#817E7E;"/>-->
+                                <t t-esc='props.data.receipt_sequence' style="color:#817E7E;"/>
+        </div>
+
+    </div>
+</div>
+                </div>
+
+
+        </div>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-receipt-center-align')]" position="replace">
+            </xpath>
+    </t>
+
+
+    <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@class ='pos-receipt']" position="replace">
+             <div class="pos-receipt" style="width:100%;font-weight: 600;">
+                 <div class="">
+
+                     <ReceiptHeader data="props.data.headerData"/>
+                     <br/>
+                     <div>
+                    <table class='receipt-orderlines' style="font-size:14px;border:1px solid black;margin-top:-5%;
+                        width: 100%;">
+                        <colgroup>
+                            <col width='3%'/>
+                            <col width='37%'/>
+                            <col width='12%'/>
+                            <col width='12%'/>
+                            <col width='12%'/>
+                            <col width='12%'/>
+                            <col width='12%'/>
+                        </colgroup>
+                        <tr style="">
+                            <th width='3%'
+                                style="text-align:center;border:1px solid black; font-weight: 600;">S.NO.</th>
+                            <th width='37%' style="text-align:center; border:1px solid black;font-weight: 600;">Description-Code</th>
+                            <th width='12%' style="text-align:center;border:1px solid black; font-weight: 600;">Qty</th>
+                            <th width='12%'
+                                style="text-align:center; border:1px solid black;font-weight: 600;">Weight</th>
+                            <th width='12%'
+                                style="text-align:center; border:1px solid black;font-weight: 600;">Rate</th>
+                            <th width='12%'
+                                style="text-align:center; border:1px solid black;font-weight: 600;">Disc.</th>
+                            <th width='12%'
+                                style="text-align:right; border:1px solid black;font-weight: 600;">Amount</th>
+                        </tr>
+                        <t t-set="vals" t-value="1"/>
+                        <t t-set="total_qty" t-value="0"/>
+                        <t t-set="total_sec_qty" t-value="0"/>
+                        <t t-set="total_dics" t-value="0"/>
+                       <tr t-foreach="props.data.orderlines" t-as="orderline" t-key="vals" t-if="orderline.product.type != 'service'">
+
+
+
+
+                            <td class="pos-center-align" style="text-align:center;border-right:1px solid black;">
+                                <t t-esc="vals"/>
+                            </td>
+                            <td style="padding-top: 1%;padding-left:2%;padding-bottom: 1%;border-right:1px solid black;">
+                                <t t-esc="orderline.productName"/>
+                                <t t-if="orderline.product.barcode">
+                                    (<t t-esc="orderline.product.barcode"/>)
+                                </t>
+                                <!--                                <t t-esc="orderline.is_sh"/>-->
+                                <t t-if="orderline.customerNote">
+                                    <div style="font-size: 14px;text-align:center" t-esc="orderline.customerNote"/>
+                                </t>
+                            </td>
+                            <td style="text-align:center;border-right:1px solid black; "
+                                class="pos-center-align price-per-unit">
+                                <t t-if="orderline.sec_uom">
+                                    <t t-if="orderline.sec_uom[1] == 'Piece'">
+                                        <t t-esc="Math.round(orderline.factor)"/> <!--<t t-esc="orderline.sec_uom[1]" />-->
+                                        <t t-esc="orderline.id"/>
+                                        <t t-set="total_sec_qty"
+                                           t-value="total_sec_qty + (orderline.sec_uom[1] == 'Piece' ? Math.round(orderline.factor) : 0)"/>
+                                    </t>
+
+                                    <t t-elif="orderline.secondary_unit_name == 'Piece'">
+                                        <t t-esc="Math.round(orderline.qty)"/> <!--<t t-esc="orderline.secondary_unit_name"/>-->
+                                        <t t-esc="orderline.id"/>
+                                        <t t-set="total_sec_qty"
+                                           t-value="total_sec_qty + (orderline.secondary_unit_name == 'Piece' ? (Math.round(orderline.qty)) : 0)"/>
+                                    </t>
+
+                                    <t t-else="">
+                                        <span style="padding-left:10px;"> - </span>
+                                    </t>
+                                    <!--                                    <t t-set="total_qty" t-value="total_qty + (orderline.sec_uom[1] == 'Kg' ? (Math.round(orderline.factor * 1000)/1000) : 0)"/>-->
+                                </t>
+
+                                <t t-elif="orderline.unit == 'Piece'">
+                                        <t t-esc="Math.round(orderline.qty)"/> <!--<t t-esc="orderline.unit"/>-->
+                                    <t t-esc="orderline.id"/>
+                                    <t t-set="total_sec_qty"
+                                       t-value="total_sec_qty + (orderline.unit == 'Piece' ? (Math.round(orderline.qty)) : 0)"/>
+                                </t>
+                                <!--                                <t t-else="">-->
+                                <!--                                   <span style="padding-left:10px;">  </span>-->
+                                <!--&lt;!&ndash;                                    <t t-set="total_qty" t-value="total_qty + (Math.round(orderline.qty * 1000)/ 1000)"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;                                    <t t-set="total_sec_qty" t-value="total_sec_qty + (orderline.unit == 'Piece' ? (Math.round(orderline.qty * 1000) /1000) : 0)"/>&ndash;&gt;-->
+                                <!--                                </t>-->
+                            </td>
+                            <td style="text-align:center;border-right:1px solid black;"
+                                class="pos-center-align price-per-unit">
+                                <span style="padding-left:25px;">
+                                <t t-if="orderline.qty">
+                                    <t t-if="orderline.secondary_unit_name == 'Kg'">
+                                        <t t-esc="orderline.qty"/> <!--<t t-esc="orderline.secondary_unit_name"/>-->
+                                        <t t-esc="orderline.id"/>
+                                        <t t-set="total_qty"
+                                           t-value="total_qty + (orderline.secondary_unit_name == 'Kg' ? (Math.round(orderline.qty * 1000)/1000) : 0)"/>
+                                    </t>
+
+                                    <t t-elif="orderline.sec_uom[1] == 'Kg'">
+                                         <t t-esc="orderline.factor"/> <!--<t t-esc="orderline.sec_uom[1]" />-->
+                                        <t t-esc="orderline.id"/>
+                                        <t t-set="total_qty"
+                                           t-value="total_qty + (orderline.sec_uom[1] == 'Kg' ? (Math.round(orderline.factor * 1000)/1000) : 0)"/>
+                                    </t>
+
+                                    <t t-else="">
+                                        <span style="padding-left:10px;"> </span>
+                                    </t>
+                                    <!--                                    <t t-set="total_qty" t-value="total_qty + (orderline.secondary_unit_name == 'Kg' ? (Math.round(orderline.qty * 1000)/1000) : 0)"/>-->
+                                    <!--                                    <t t-set="total_sec_qty" t-value="total_sec_qty + (orderline.secondary_unit_name == 'Piece' ? Math.round(orderline.qty) : 0)"/>-->
+                                </t>
+                                    <!--                                <t t-else="">-->
+                                    <!--                                    <span style="padding-left:10px;">  </span>-->
+                                    <!--                                </t>-->
+                                </span>
+                            </td>
+
+                            <td class="pos-center-align"
+                                style=" padding-right:1%;text-align:right;border-right:1px solid black;">
+                                <t t-esc="orderline.unitPrice"/>
+                            </td>
+                            <td class="pos-center-align" style="text-align:center;border-right:1px solid black;;">
+                                    <t t-if="orderline.discount &gt; 0">
+                                        <t t-esc="orderline.discount"/>%
+                                        <t t-set="total_dics"
+                                           t-value="total_dics + (orderline.discount  ? (Math.round(orderline.dics * 100)/100) : 0)"/>
+                                    </t>
+                                <t t-else="">
+                                        <span style="padding-left:10px;">  </span>
+                                    </t>
+                                </td>
+                            <td class="pos-center-align" style=" padding-right:1%;text-align:right;">
+                                <t t-esc="orderline.price_with_tax"/>
+                            </td>
+                            <t t-set="vals" t-value="vals+1"/>
+
+                        </tr>
+
+                        <tr style="border:1px solid black">
+                            <td></td>
+                            <td></td>
+                            <td><span style="font-size:14px;text-align:center; margin-left:38%;">  <t
+                                    t-esc="Math.round(total_sec_qty)"/>
+                              </span></td>
+                            <td ><span style="font-size:14px;text-align:center; margin-left:30%">
+<!--                                <t t-esc="Math.round(total_qty * 1000)/1000"/>-->
+<!--                                        <t t-esc="'%.3f' % (total_qty or 0)"/>-->
+                                        <t t-esc="(total_qty || 0).toFixed(3)"/>
+                                </span></td>
+                            <td></td>
+                            <td></td>
+                            <div style="margin-left:12%">
+                            <t t-set="total_without_discount" t-value="props.data.amount_total + total_discount"/>
+                            <tr>
+                                <td  style="text-align:right;font-weight:600;">
+                                    <t t-esc="props.formatCurrency(props.data.total_without_discount)"/>
+                                </td>
+                            </tr>
+                            </div>
+
+
+                            <!--                              <td colspan="2"><span style="font-size:11px;text-align:center; margin-left:8%"> <t t-esc="Math.round(total_dics * 100)/100"/> %-->
+                            <!--                                </span></td>-->
+
+
+                        </tr>
+                        <t t-set="total_tax" t-value="props.data.amount_tax"/>
+                        <t t-set="gst_total" t-value="(props.data.amount_total * 5) / 100"/>
+
+                        <tr>
+                                <td colspan="2">
+                                    <span style="text-align:center; margin-left:5%;font-weight: 600;">
+                                        CGST : <t t-esc="props.formatCurrency(gst_total/2)"/>
+                                    </span>
+                                </td>
+                            <td colspan="2">
+                                    <span style="font-weight: 600;">
+                                        SGST : <t t-esc="props.formatCurrency(gst_total/2)"/>
+                                    </span>
+                                </td>
+<!--                            <td></td>-->
+
+                              <td colspan="5" style="text-align:right;font-weight:600;">Discount:
+                            <span style="margin-left:8px;">
+                            <t t-if="props.data.discount_value">
+                                <t t-esc="props.data.discount_value"/>
+                             </t>
+                                <t t-else="">
+                                    <span>0.00</span>
+                                </t>
+                            </span>
+                        </td>
+
+<!--                            <td style="font-size:14px;text-align:center;">Total :</td>-->
+<!--                            <td style="font-size:14px;text-align:center;">-->
+<!--                                    <span t-esc="props.formatCurrency(props.data.amount_total)"/>-->
+<!--                                </td>-->
+                            </tr>
+
+
+<!--                        <tr>-->
+<!--    <td colspan="6" style="text-align:right;font-weight:600;">Discount :</td>-->
+<!--    <td style="text-align:right;font-weight:600;">-->
+<!--        <t t-esc="props.data.discount_value"/>-->
+<!--    </td>-->
+<!--</tr>-->
+
+                    </table>
+
+<!--                    <div style="margin-left:79%">-->
+<!--                        <tr>-->
+<!--                        <td colspan="6" style="text-align:right;font-weight:600;">Discount:-->
+<!--                            <span style="margin-left:8px;"><t t-esc="props.data.discount_value"/></span>-->
+<!--                        </td>-->
+<!--                            -->
+<!--                    </tr>-->
+
+<!--                    </div>-->
+
+                         <div style="border-right:1px solid black;border-left:1px solid black;border-bottom:1px solid black;margin-top:0.5px;margin-left:83%;">
+                      <td style="font-size:14px;text-align:right;">Total :
+                                    <span t-esc="props.formatCurrency(props.data.amount_total)"/>
+                                </td>
+                        </div>
+
+
+
+                         <!-- CGST -->
+                         <!--            <div>-->
+                         <!--        <span style="font-weight: 600; margin-right:-50%;">CGST :</span>-->
+                         <!--                <span style="float:right; font-weight: 600;">-->
+                         <!--            <t t-esc="props.formatCurrency(total_tax/2)"/>-->
+                         <!--        </span>-->
+                         <!--    </div>-->
+
+                         <!--                                    <td>-->
+                         <!--    &lt;!&ndash; SGST &ndash;&gt;-->
+                         <!--                                        <div>-->
+                         <!--        <span style="font-weight: 600;">SGST :</span>-->
+                         <!--                                            <span style="float:right; font-weight: 600;">-->
+                         <!--            <t t-esc="props.formatCurrency(total_tax/2)"/>-->
+                         <!--        </span>-->
+                         <!--    </div>-->
+                         <!--        </td>-->
+                         <!--                                    <div>-->
+                         <!--                                    <span width='10%' style="text-align:left; font-weight: 600;">Total : </span>-->
+                         <!--                                        <span width='10%' style="text-align:right; font-weight: 600;"><span t-esc="props.formatCurrency(props.data.amount_total)"/></span>-->
+                         <!--                                </div>-->
+                         <!--    </tr>-->
+
+                         <!--</div>-->
+                         <!--</table>-->
+
+
+                         <!--                         <br/>-->
+                         <!--                          <hr style="border-top: 1px solid black; margin-top: 10px;"/>-->
+                         <!--                          <div style="float:right;">-->
+                         <!--                              <span style="font-size:11px;margin-right:40px;"> <t t-esc="Math.round(total_qty * 1000)/1000"/> Kg-->
+                         <!--                                </span>-->
+                         <!--                              <span style="font-size:11px;margin-right:55px;">  <t t-esc="Math.round(total_sec_qty)"/> Piece-->
+                         <!--                              </span>-->
+                         <!--                            <span width='10%' style="text-align:left; font-weight: 600;">Total : </span>-->
+                         <!--                             <span width='10%' style="text-align:right; font-weight: 600;"><span t-esc="props.formatCurrency(props.data.amount_total)"/></span>-->
+                         <!--                         </div>-->
+                         <!--                            <br/>-->
+
+
+                         <!--                     <div style="width:70%;padding-top:20%;font-size:16px">-->
+                         <!--                         <span style="font-size:11px;">Total Quantity (in Kg) :  <t t-esc="Math.round(total_qty * 1000)/1000"/> Kg-->
+                         <!--                         </span>-->
+                         <!--                         </div>-->
+
+                         <!--                     <div style="width:70%;font-size:16px">-->
+                         <!--                         <span style="font-size:11px;">Total Quantity (in Piece) :  <t t-esc="Math.round(total_sec_qty)"/> Piece-->
+                         <!--                         </span>-->
+                         <!--                         </div><br/>-->
+                         <br/>
+                         <br/>
+                         <br/>
+                         <br/>
+
+                         <div style="width:70%;font-size:14px">
+                         <span style="font-size:11px;">NOTE: Goods sold once will not be taken back (or) Exchanged.</span>
+                         </div>
+                     <br/>
+                         <div style="width:70%;font-size:14px">
+                         <span style="font-size:11px;">This is Computer Generated Invoice Hence Signature not Required </span>
+                         </div>
+                </div>
+                 </div>
+             </div>
+        </xpath>
+    </t>
+
+</templates>
