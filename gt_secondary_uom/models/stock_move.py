@@ -174,10 +174,11 @@ class StockPicking(models.Model):
                         'location_id': move.location_id.id,
                         'location_dest_id': move.location_dest_id.id,
                     })
-                else:
-                    for line in move.move_line_ids:
-                        if line.qty_done == 0:
-                            line.qty_done = move.product_uom_qty
+                # THIS IS THE CAUSE
+                # else:
+                #     for line in move.move_line_ids:
+                #         if line.qty_done == 0:
+                #             line.qty_done = move.product_uom_qty
 
         return super().button_validate()
 
